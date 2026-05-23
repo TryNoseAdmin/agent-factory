@@ -4,7 +4,7 @@
 Comprehensive testing phase. Spawns parallel testers for functional, visual, performance, and accessibility verification. Includes unit/integration tests and E2E testing.
 
 ## Pre-flight
-1. Read state: `.agents/project-data/state/nose/state.json`
+1. Read state: `.project-state.json`
 2. Identify what changed (from build output or diff)
 
 ## Execution Flow

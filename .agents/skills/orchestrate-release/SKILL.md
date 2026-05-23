@@ -1,7 +1,7 @@
 # /orchestrate-release — Release Orchestrator
 
 ## Purpose
-Post-merge release workflow for the nose repo. Updates docs, polishes CHANGELOG, creates git tag.
+Post-merge release workflow. Updates docs, polishes CHANGELOG, creates git tag.
 
 ## Execution Flow
 
@@ -14,11 +14,11 @@ git diff HEAD~1...HEAD --stat
 ### Step 2: Update Affected Documentation
 | If this changed... | Update this doc... |
 |--------------------|--------------------|
-| API endpoints | `docs/NOSE_PRODUCTION_ARCHITECTURE.md` |
-| Database schema | `docs/schema/perfume-schema-v2.md` |
-| Tech stack | `docs/TECH_STACK.md` |
-| Deployment | `docs/REPOS.md` |
-| Brand/design | `docs/brand_guidelines.md` |
+| API endpoints | `docs/ARCHITECTURE.md` or equivalent |
+| Database schema | `docs/schema/` or equivalent |
+| Tech stack | `docs/TECH_STACK.md` or equivalent |
+| Deployment | `docs/DEPLOYMENT.md` or equivalent |
+| Brand/design | `docs/brand_guidelines.md` or equivalent |
 
 ### Step 3: Cross-Doc Consistency Check
 ```bash
@@ -56,7 +56,7 @@ Ticket: [TASK-XXX → Completed]
 Docs updated: [list]
 Tag: v[X.Y.Z]
 
-The scent has been bottled. 🫧
+Release complete. 🚀
 ```
 
 ---

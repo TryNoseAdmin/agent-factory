@@ -42,7 +42,24 @@ for ref in $ARCHIVED; do
   fi
 done
 
-# Check 4: health check (state, git sanity, cleanup)
+# Check 4: project state/config exist
+if [ ! -f ".project-state.json" ]; then
+  echo ""
+  echo "⚠️  .project-state.json MISSING"
+  WARN=$((WARN + 1))
+fi
+if [ ! -f ".project-config.json" ]; then
+  echo ""
+  echo "⚠️  .project-config.json MISSING"
+  WARN=$((WARN + 1))
+fi
+if [ ! -f ".project-context.md" ]; then
+  echo ""
+  echo "⚠️  .project-context.md MISSING"
+  WARN=$((WARN + 1))
+fi
+
+# Check 5: health check (state, git sanity, cleanup)
 if [ -f ".agents/scripts/health-check.sh" ]; then
   HEALTH=$(bash .agents/scripts/health-check.sh 2>/dev/null)
   if echo "$HEALTH" | grep -q "STATE: MISSING\|STATE: CORRUPT\|STATE: INCOMPLETE"; then

@@ -12,6 +12,10 @@ For EACH agent you spawn, construct the prompt as:
 
 ---
 
+{ReadFile('.project-context.md')}
+
+---
+
 {ReadFile('.agents/agents/agent-<name>.md')}
 
 ---
