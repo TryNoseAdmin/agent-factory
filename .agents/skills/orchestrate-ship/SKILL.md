@@ -3,6 +3,33 @@
 ## Purpose
 Create PR, run final checks, and merge to main. The gate before release.
 
+## Spawn Protocol
+
+For EACH agent you spawn, construct the prompt as:
+
+```
+{ReadFile('~/.agents/rules/universal.md')}
+
+---
+
+{ReadFile('.project-context.md')}
+
+---
+
+{ReadFile('~/.agents/agents/agent-<name>.md')}
+
+---
+
+{ReadFile('~/.agents/skills/agent-<name>/SKILL.md')}
+
+---
+
+## Task Context
+[specific task, ticket, diff, etc.]
+```
+
+Spawn agents in parallel when possible. Wait for all results before proceeding.
+
 ## Execution Flow
 
 ### Step 1: Final Pre-Flight Checks

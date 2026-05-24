@@ -3,6 +3,33 @@
 ## Purpose
 Comprehensive planning phase. Spawns discovery agents in parallel, synthesizes into a single coherent plan, and creates ONE Notion ticket with all artifacts attached.
 
+## Spawn Protocol
+
+For EACH agent you spawn, construct the prompt as:
+
+```
+{ReadFile('~/.agents/rules/universal.md')}
+
+---
+
+{ReadFile('.project-context.md')}
+
+---
+
+{ReadFile('~/.agents/agents/agent-<name>.md')}
+
+---
+
+{ReadFile('~/.agents/skills/agent-<name>/SKILL.md')}
+
+---
+
+## Task Context
+[specific task, ticket, diff, etc.]
+```
+
+Spawn agents in parallel when possible. Wait for all results before proceeding.
+
 ## Pre-flight
 1. Read state: `.project-state.json`
 2. Capture the feature request from the user

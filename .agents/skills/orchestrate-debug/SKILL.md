@@ -20,6 +20,10 @@ For EACH agent you spawn, construct the prompt as:
 
 ---
 
+{ReadFile('~/.agents/skills/agent-<name>/SKILL.md')}
+
+---
+
 ## Task Context
 [specific task, ticket, diff, etc.]
 ```

@@ -1,7 +1,34 @@
 # /orchestrate-test — Test Orchestrator
 
 ## Purpose
-Comprehensive testing phase. Spawns parallel testers for functional, visual, performance, and accessibility verification. Includes unit/integration tests and E2E testing.
+Comprehensive testing phase. Runs automated checks, spawns parallel QA testers, synthesizes results into a health report, and gates the next phase.
+
+## Spawn Protocol
+
+For EACH agent you spawn, construct the prompt as:
+
+```
+{ReadFile('~/.agents/rules/universal.md')}
+
+---
+
+{ReadFile('.project-context.md')}
+
+---
+
+{ReadFile('~/.agents/agents/agent-<name>.md')}
+
+---
+
+{ReadFile('~/.agents/skills/agent-<name>/SKILL.md')}
+
+---
+
+## Task Context
+[specific task, ticket, diff, etc.]
+```
+
+Spawn agents in parallel when possible. Wait for all results before proceeding.
 
 ## Pre-flight
 1. Read state: `.project-state.json`
@@ -45,7 +72,50 @@ QA Health Report
 - Overall: [score] — [PASS/FAIL]
 ```
 
-### Step 4: Decision
+### Step 4: Regression Check
+Verify no existing functionality broke:
+```bash
+# Run full test suite (not just changed files)
+cd <PROJECT:frontend-repo>
+npm test -- --watchAll=false
+
+cd <PROJECT:backend-repo>
+python -m pytest tests/ -v
+```
+
+### Step 5: Update State
+```python
+import json
+from datetime import datetime, timezone
+
+with open('.project-state.json', 'r') as f:
+    state = json.load(f)
+
+state['qa_results'] = {
+    'score': [overall_score],
+    'rating': 'PASS' | 'FAIL',
+    'recommendation': 'Proceed' | 'Fix and re-test' | 'Debug required',
+    'iteration': state['qa_results'].get('iteration', 0) + 1,
+    'failures': {
+        'critical': [...],
+        'high': [...],
+        'medium': [...],
+        'low': [...]
+    }
+}
+state['updated_at'] = datetime.now(timezone.utc).isoformat()
+state['history'].append({
+    'timestamp': datetime.now(timezone.utc).isoformat(),
+    'phase': 'test',
+    'action': 'qa_complete',
+    'detail': f"Score: {state['qa_results']['score']} — {state['qa_results']['rating']}"
+})
+
+with open('.project-state.json', 'w') as f:
+    json.dump(state, f, indent=2)
+```
+
+### Step 6: Decision
 | Overall Score | Action |
 |---------------|--------|
 | ≥ 85 | Proceed to review |
