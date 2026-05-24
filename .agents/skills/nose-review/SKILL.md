@@ -1,6 +1,6 @@
 > ⚠️ **DEPRECATED** — This skill has been superseded by the agent-orchestrator architecture.
 > Use `/orchestrate-*` skills instead. This file is kept for backward compatibility and will be removed in a future release.
-> See `.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `.agents/agents/agent-*.md` for domain agents.
+> See `~/.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `~/.agents/agents/agent-*.md` for domain agents.
 
 ---
 name: nose-review
@@ -68,13 +68,13 @@ You are the NOSE review orchestrator. First **classify the diff** to decide whic
 
 **Why scoped spawn:** firing all 7 reviewers on a backend-only PR wastes tokens on the Design + Design Consistency reviewers (they have nothing to review). Firing the Engineering + Security reviewers on a docs-only PR has the same problem. The skill picks the right subset based on what actually changed.
 
-**State file:** `.agents/nose-state.json`
+**State file:** `.project-state.json`
 
 ## Step 0: Read State
 
 ```bash
-if [ -f .agents/nose-state.json ]; then
-  cat .agents/nose-state.json
+if [ -f .project-state.json ]; then
+  cat .project-state.json
 fi
 ```
 
@@ -90,10 +90,10 @@ If `iteration > 0`, note this is a re-review and check if previously flagged iss
 **Multi-repo:** Collect diffs from all repos that have changes on the feature branch.
 
 ```bash
-BRANCH=$(python3 -c "import json; d=open('$HOME/Documents/GitHub/TryNose/nose/.agents/nose-state.json').read(); print(json.loads(d).get('branch',''))")
+BRANCH=$(python3 -c "import json; d=open('PROJECT:brain-repo/.project-state.json').read(); print(json.loads(d).get('branch',''))")
 
 echo "=== nose-fe diff ==="
-cd ~/Documents/GitHub/TryNose/nose-fe
+cd PROJECT:frontend-repo
 git fetch origin main 2>/dev/null
 if git show-ref --verify --quiet "refs/heads/$BRANCH" 2>/dev/null; then
   git diff main...$BRANCH --stat
@@ -101,14 +101,14 @@ if git show-ref --verify --quiet "refs/heads/$BRANCH" 2>/dev/null; then
 fi
 
 echo "=== nose-be diff ==="
-cd ~/Documents/GitHub/TryNose/nose-be
+cd PROJECT:backend-repo
 git fetch origin main 2>/dev/null
 if git show-ref --verify --quiet "refs/heads/$BRANCH" 2>/dev/null; then
   git diff main...$BRANCH --stat
   git diff main...$BRANCH
 fi
 
-cd ~/Documents/GitHub/TryNose/nose
+cd PROJECT:brain-repo
 ```
 
 If no changes found in any repo, ask: "What should I review? Share the branch name or describe the changes."
@@ -120,7 +120,7 @@ If no changes found in any repo, ask: "What should I review? Share the branch na
 Read the ticket's spec from Notion via MCP — never `/browse` to notion.so (login wall). The ticket ID is in state:
 
 ```bash
-python3 -c "import json; s=json.load(open('.agents/nose-state.json')); print(s.get('ticket_id',''))"
+python3 -c "import json; s=json.load(open('.project-state.json')); print(s.get('ticket_id',''))"
 ```
 
 Then fetch the ticket page using `mcp__claude_ai_Notion__notion-fetch` (Sprint Tracker data source `847f3552-71bb-430b-9f52-f6b6938670ab`) and extract:
@@ -138,12 +138,12 @@ Run linters first — violations here are automatic CRITICAL findings:
 
 ```bash
 # nose-fe
-cd ~/Documents/GitHub/TryNose/nose-fe
+cd PROJECT:frontend-repo
 npx eslint src/ --max-warnings 0 2>&1 | head -50
 npx tsc --noEmit 2>&1 | head -30
 
 # nose-be
-cd ~/Documents/GitHub/TryNose/nose-be
+cd PROJECT:backend-repo
 python -m ruff check backend/app/ 2>&1 | head -50
 python -m mypy backend/app/ --ignore-missing-imports 2>&1 | head -30
 ```
@@ -156,10 +156,10 @@ Collect the changed paths from the multi-repo diff in Step 1, then classify:
 
 ```bash
 # Collect changed paths across all three repos
-BRANCH=$(python3 -c "import json; print(json.load(open('.agents/nose-state.json')).get('branch',''))")
+BRANCH=$(python3 -c "import json; print(json.load(open('.project-state.json')).get('branch',''))")
 PATHS=$(
   for repo in nose nose-fe nose-be; do
-    REPO_PATH="$HOME/Documents/GitHub/TryNose/$repo"
+    REPO_PATH="PROJECT:$repo"
     if [ -d "$REPO_PATH/.git" ] && git -C "$REPO_PATH" show-ref --verify --quiet "refs/heads/$BRANCH" 2>/dev/null; then
       git -C "$REPO_PATH" diff --name-only "main...$BRANCH" 2>/dev/null | sed "s|^|$repo/|"
     fi
@@ -172,14 +172,14 @@ Classify each path into one or more buckets:
 
 | Bucket | Path pattern |
 |---|---|
-| **fe_code** | `nose-fe/src/app/**`, `nose-fe/src/components/**`, `nose-fe/src/hooks/**`, `nose-fe/src/lib/**`, `nose-fe/src/styles/**`, `nose-fe/src/**/*.tsx`, `nose-fe/src/**/*.ts`, `nose-fe/src/**/*.css` |
-| **be_code** | `nose-be/backend/**/*.py`, `nose-be/scripts/**/*.py`, `nose-be/alembic/**` |
+| **fe_code** | `PROJECT:frontend-repo/src/app/**`, `PROJECT:frontend-repo/src/components/**`, `PROJECT:frontend-repo/src/hooks/**`, `PROJECT:frontend-repo/src/lib/**`, `PROJECT:frontend-repo/src/styles/**`, `PROJECT:frontend-repo/src/**/*.tsx`, `PROJECT:frontend-repo/src/**/*.ts`, `PROJECT:frontend-repo/src/**/*.css` |
+| **be_code** | `PROJECT:backend-repo/backend/**/*.py`, `PROJECT:backend-repo/scripts/**/*.py`, `PROJECT:backend-repo/alembic/**` |
 | **tests** | `**/tests/**`, `**/__tests__/**`, `**/*test*.py`, `**/*.test.ts`, `**/*.test.tsx`, `**/*.spec.ts` |
 | **config** | `*.yml`, `*.yaml`, `*.toml`, `*.json` (package.json, tsconfig, vercel.json, pyproject, .pre-commit), `.github/**`, `next.config.*`, `Dockerfile*` |
 | **docs** | `docs/**/*.md`, `CHANGELOG.md`, `README.md`, `*.md` under root, `CLAUDE.md` |
-| **skills** | `.agents/skills/**` |
+| **skills** | `~/.agents/skills/**` |
 
-One path can hit multiple buckets (a test file under `nose-be/backend/tests/` hits both `be_code` and `tests`).
+One path can hit multiple buckets (a test file under `PROJECT:backend-repo/backend/tests/` hits both `be_code` and `tests`).
 
 ### Reviewer selection rules
 
@@ -189,9 +189,9 @@ Apply these rules in order; a reviewer runs if ANY rule adds it.
 |---|---|---|
 | 1 | Engineering | `fe_code` OR `be_code` OR `config` |
 | 2 | Security | `fe_code` OR `be_code` OR `config` |
-| 3 | Design | `fe_code` (any file under `nose-fe/src/`) |
+| 3 | Design | `fe_code` (any file under `PROJECT:frontend-repo/src/`) |
 | 4 | Adversarial | **ALWAYS** (catches edge cases even in docs/config) |
-| 5 | Design Consistency | `fe_code` (any file under `nose-fe/src/`) |
+| 5 | Design Consistency | `fe_code` (any file under `PROJECT:frontend-repo/src/`) |
 | 6 | Coding Standards | `fe_code` OR `be_code` (NOT config-only, NOT docs-only, NOT skills-only) |
 | 7 | Acceptance Criteria | **ALWAYS** — load-bearing, gates the verdict |
 
@@ -204,12 +204,12 @@ Apply these rules in order; a reviewer runs if ANY rule adds it.
 | Frontend-only UI | 1, 2, 3, 4, 5, 6, 7 |
 | Config / CI / infra only | 1, 2, 4, 7 — **skip 3, 5, 6** |
 | Docs-only (`/docs`, `CHANGELOG`, `README`) | 4, 7 — **skip 1, 2, 3, 5, 6** |
-| Skill / process change only (`.agents/skills/**`) | 4, 7 — **skip 1, 2, 3, 5, 6** |
+| Skill / process change only (`~/.agents/skills/**`) | 4, 7 — **skip 1, 2, 3, 5, 6** |
 | Tests-only change | 1, 4, 6, 7 — **skip 2, 3, 5** |
 
 State which reviewers you're spawning and why in one line before Step 2. Example:
 
-> Classified as **backend-only** (nose-be/backend/** only touched). Spawning reviewers 1, 2, 4, 6, 7. Skipping 3 (Design) and 5 (Design Consistency) — no FE files changed.
+> Classified as **backend-only** (PROJECT:backend-repo/backend/** only touched). Spawning reviewers 1, 2, 4, 6, 7. Skipping 3 (Design) and 5 (Design Consistency) — no FE files changed.
 
 If the classification is ambiguous (e.g. diff touches `.md` AND `.tsx`), err on the side of including the reviewer, not skipping it. When in doubt, spawn. This skill optimises away the *obvious* waste, not every edge case.
 
@@ -224,8 +224,8 @@ Background: per memory entry `memory/nose/project_nose_be_precommit_broken.md`, 
 **Self-contained execution** — re-derive `BRANCH` and `BE_TOUCHED` here, since each Bash tool call is a fresh shell and previous variable scope does not persist:
 
 ```bash
-BRANCH=$(python3 -c "import json; print(json.load(open('$HOME/Documents/GitHub/TryNose/nose/.agents/nose-state.json')).get('branch',''))")
-NOSE_BE=~/Documents/GitHub/TryNose/nose-be
+BRANCH=$(python3 -c "import json; print(json.load(open('PROJECT:brain-repo/.project-state.json')).get('branch',''))")
+NOSE_BE=PROJECT:backend-repo
 
 # Re-derive whether this branch touches backend code in nose-be
 BE_TOUCHED=0
@@ -238,12 +238,12 @@ if [ "$BE_TOUCHED" -gt 0 ]; then
 
   # 1. .secrets.baseline must exist for detect-secrets hook
   if [ ! -f "$NOSE_BE/.secrets.baseline" ]; then
-    echo "[HIGH] nose-be/.secrets.baseline missing — detect-secrets hook will fail on every commit"
+    echo "[HIGH] PROJECT:backend-repo/.secrets.baseline missing — detect-secrets hook will fail on every commit"
   fi
 
   # 2. Pre-commit config must exist
   if [ ! -f "$NOSE_BE/.pre-commit-config.yaml" ]; then
-    echo "[MEDIUM] nose-be/.pre-commit-config.yaml missing — no local hook enforcement at all"
+    echo "[MEDIUM] PROJECT:backend-repo/.pre-commit-config.yaml missing — no local hook enforcement at all"
   fi
 
   # 3. Branch commits should not have used --no-verify or skipped hooks
@@ -269,14 +269,14 @@ Spawn only the reviewers from the Step 1.75 set, simultaneously, using the Agent
 
 ### Reviewer 1 — Engineering
 
-Read `.agents/agents/reviewer-1-engineering.md`, then replace `[PASTE DIFF HERE]` with the actual diff before spawning the Agent.
+Read `~/.agents/agents/reviewer-1-engineering.md`, then replace `[PASTE DIFF HERE]` with the actual diff before spawning the Agent.
 
 
 ---
 
 ### Reviewer 2 — Security
 
-Read `.agents/agents/reviewer-2-security.md`, then replace `[PASTE DIFF HERE]` with the actual diff before spawning the Agent.
+Read `~/.agents/agents/reviewer-2-security.md`, then replace `[PASTE DIFF HERE]` with the actual diff before spawning the Agent.
 
 
 ---
@@ -345,7 +345,7 @@ Format: [SEVERITY] Layer (Accessibility/Touch/Layout/etc.) — Issue — file:li
 
 ### Reviewer 4 — Adversarial
 
-Read `.agents/agents/reviewer-4-adversarial.md`, then replace `[PASTE DIFF HERE]` with the actual diff before spawning the Agent.
+Read `~/.agents/agents/reviewer-4-adversarial.md`, then replace `[PASTE DIFF HERE]` with the actual diff before spawning the Agent.
 
 
 ---
@@ -434,7 +434,7 @@ DIFF:
 [PASTE DIFF HERE]
 
 ADDITIONAL CONTEXT YOU MAY USE:
-- Read any file in ~/Documents/GitHub/TryNose/nose-fe or nose-be to verify claims
+- Read any file in PROJECT:frontend-repo or nose-be to verify claims
 - Run `grep -r "..." src/` to confirm a string/token is actually present
 - Check docs/design/DESIGN_CHECKLIST.md for brand/copy rules when a criterion references them
 
@@ -539,7 +539,7 @@ python3 -c "
 import json
 from datetime import datetime, timezone
 
-with open('.agents/nose-state.json', 'r') as f:
+with open('.project-state.json', 'r') as f:
     state = json.load(f)
 
 # Determine verdict
@@ -603,7 +603,7 @@ state['history'].append({
     )
 })
 
-with open('.agents/nose-state.json', 'w') as f:
+with open('.project-state.json', 'w') as f:
     json.dump(state, f, indent=2)
 
 print(f'State updated: review complete. Verdict: {verdict}')

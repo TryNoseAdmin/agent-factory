@@ -1,6 +1,6 @@
 > ⚠️ **DEPRECATED** — This skill has been superseded by the agent-orchestrator architecture.
 > Use `/orchestrate-*` skills instead. This file is kept for backward compatibility and will be removed in a future release.
-> See `.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `.agents/agents/agent-*.md` for domain agents.
+> See `~/.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `~/.agents/agents/agent-*.md` for domain agents.
 
 ---
 name: nose-setup
@@ -52,10 +52,10 @@ awk '/^## \[/{n++; if (n>3) exit} n>0' CHANGELOG.md 2>/dev/null | head -80
 ## Step 3 — Current session state
 
 ```bash
-if [ -f .agents/nose-state.json ]; then
+if [ -f .project-state.json ]; then
   python3 -c "
 import json
-with open('.agents/nose-state.json') as f:
+with open('.project-state.json') as f:
     s = json.load(f)
 print(f\"Session:        {s.get('session_id', '-')}\")
 print(f\"Current phase:  {s.get('current_phase', '-')}\")
@@ -101,7 +101,7 @@ If MCP is unavailable: `Notion unavailable — open https://www.notion.so/8a82f4
 
 ```bash
 for repo in nose nose-fe nose-be; do
-  REPO_PATH="$HOME/Documents/GitHub/TryNose/$repo"
+  REPO_PATH="PROJECT:$repo"
   if [ -d "$REPO_PATH/.git" ]; then
     echo "=== $repo ==="
     git -C "$REPO_PATH" log --oneline -5 2>/dev/null || echo "  (log unavailable)"

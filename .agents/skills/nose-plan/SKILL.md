@@ -1,6 +1,6 @@
 > ⚠️ **DEPRECATED** — This skill has been superseded by the agent-orchestrator architecture.
 > Use `/orchestrate-*` skills instead. This file is kept for backward compatibility and will be removed in a future release.
-> See `.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `.agents/agents/agent-*.md` for domain agents.
+> See `~/.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `~/.agents/agents/agent-*.md` for domain agents.
 
 ---
 name: nose-plan
@@ -60,16 +60,16 @@ A bad plan poisons everything downstream — the Notion ticket gets built, revie
 ---
 
 
-**State file:** `.agents/nose-state.json`
+**State file:** `.project-state.json`
 **Sprint tracker:** `https://www.notion.so/8a82f4d7c75f49699c8984d0074e89fb`
 **Sprint tracker data source ID:** `847f3552-71bb-430b-9f52-f6b6938670ab`
 
 ## Step 0: Initialize State
 
 ```bash
-if [ -f .agents/nose-state.json ]; then
+if [ -f .project-state.json ]; then
   echo "EXISTING STATE:"
-  cat .agents/nose-state.json
+  cat .project-state.json
   echo "---"
   echo "Starting new session will reset state. Existing session found."
 fi
@@ -79,7 +79,7 @@ Create a new session state:
 
 ```bash
 SESSION_ID="session-$(date +%Y%m%d-%H%M%S)"
-cat > .agents/nose-state.json << EOF
+cat > .project-state.json << EOF
 {
   "session_id": "$SESSION_ID",
   "created_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
@@ -203,7 +203,7 @@ You are a UX/design strategist for NOSE perfume platform.
 
 Brand (v0.7.0+ nose-design-gemini): white canvas (#fbfaff) + deep plum (`--violet-800` #301A2F) + Inter only. Single white-glass tier (`.card` = rgba(255,255,255,0.78) + blur(14px)). Note family pastels preserved. Wisp mascot is repainted for white canvas.
 
-Token authority: `nose-fe/src/styles/tokens.css` + `components.css` + `tokens.brand-extension.css`.
+Token authority: `PROJECT:frontend-repo/src/styles/tokens.css` + `components.css` + `tokens.brand-extension.css`.
 
 Feature request: [INSERT REQUEST]
 
@@ -292,7 +292,7 @@ As a [user type], I want to [action] so that [outcome].
 
 ### Design System Contract (REQUIRED for any FE work)
 
-**Before filling, READ `nose-fe/src/styles/tokens.css` + `nose-fe/src/styles/components.css`.**
+**Before filling, READ `PROJECT:frontend-repo/src/styles/tokens.css` + `PROJECT:frontend-repo/src/styles/components.css`.**
 Every cell must reference a token or utility class that exists there. No raw hex. No invented values.
 
 | Element | Utility Class | Surface Token | Text Token | Font Token | Control Size | Notes |
@@ -398,7 +398,7 @@ python3 -c "
 import json
 from datetime import datetime, timezone
 
-with open('.agents/nose-state.json', 'r') as f:
+with open('.project-state.json', 'r') as f:
     state = json.load(f)
 
 state['feature_name'] = '$FEATURE_NAME'
@@ -414,7 +414,7 @@ state['history'].append({
     'detail': 'Plan written into Notion ticket $TICKET_ID ($TICKET_NOTION_URL)'
 })
 
-with open('.agents/nose-state.json', 'w') as f:
+with open('.project-state.json', 'w') as f:
     json.dump(state, f, indent=2)
 
 print('State updated: plan complete')
@@ -427,7 +427,7 @@ No `plan_doc` file to save. The Notion ticket body IS the plan.
 
 After writing to Notion, output:
 
-Read `.agents/agents/analyst-a-strategy.md`, then replace `[INSERT REQUEST]` with the feature request before spawning the Agent.
+Read `~/.agents/agents/analyst-a-strategy.md`, then replace `[INSERT REQUEST]` with the feature request before spawning the Agent.
 
 
 Or if using autonomous mode: "State updated. `/nose-orchestrator` can now auto-chain to `/build`."
@@ -446,4 +446,4 @@ Or if using autonomous mode: "State updated. `/nose-orchestrator` can now auto-c
 - Tech stack: Next.js 15 + FastAPI + Neon PostgreSQL + Vercel + Clerk (Dev) + Cloudflare R2
 - Brand (v0.7.0+): white canvas + deep plum + Inter only (nose-design-gemini)
 - Key docs: `docs/TECH_STACK.md`, `docs/SEO_STRATEGY.md`, `docs/brand_guidelines.md`, `CLAUDE.md`
-- Schema source of truth: `nose-be/backend/app/models/__init__.py`
+- Schema source of truth: `PROJECT:backend-repo/backend/app/models/__init__.py`

@@ -1,6 +1,6 @@
 > ⚠️ **DEPRECATED** — This skill has been superseded by the agent-orchestrator architecture.
 > Use `/orchestrate-*` skills instead. This file is kept for backward compatibility and will be removed in a future release.
-> See `.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `.agents/agents/agent-*.md` for domain agents.
+> See `~/.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `~/.agents/agents/agent-*.md` for domain agents.
 
 # /nose-content — NOSE Content & Growth Orchestrator
 
@@ -59,7 +59,7 @@ It follows the **14 Iron Laws** derived from high-ticket funnel analysis, adapte
 ASSESS → DIAGNOSE → PLAN → EXECUTE → REPORT → UPDATE STATE
 ```
 
-**Assess:** Reads `.agents/content-state.json` and `.agents/nose-state.json`
+**Assess:** Reads `.agents/content-state.json` and `.project-state.json`
 **Diagnose:** Identifies the highest-leverage bottleneck
 **Plan:** Picks ONE initiative to execute
 **Execute:** Generates actual content, strategies, and plans
@@ -227,6 +227,6 @@ Next activation recommended: [when + why]
 
 ## Agent Reference
 
-**Agent file:** `.agents/agents/content-strategist.md`  
+**Agent file:** `~/.agents/agents/content-strategist.md`  
 **State file:** `.agents/content-state.json`  
 **Source brain:** 14 Iron Laws derived from 116 high-ticket funnel analyses ($200K–$3M/month), adapted for NOSE.

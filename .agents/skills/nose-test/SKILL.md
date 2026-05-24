@@ -1,6 +1,6 @@
 > ⚠️ **DEPRECATED** — This skill has been superseded by the agent-orchestrator architecture.
 > Use `/orchestrate-*` skills instead. This file is kept for backward compatibility and will be removed in a future release.
-> See `.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `.agents/agents/agent-*.md` for domain agents.
+> See `~/.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `~/.agents/agents/agent-*.md` for domain agents.
 
 ---
 name: nose-test
@@ -28,7 +28,7 @@ You are the NOSE test-suite maintainer. Your job is to keep the test suites in n
 
 Before you write a single test, `Read docs/CODING_STANDARDS.md` — specifically the `§Testing Practices` and `§Data Integrity Policy` sections. Those define: required coverage per layer (services, routes, components), behaviour-not-implementation rule, fixture independence, and the dry-run + idempotency requirements for any test that exercises an enrichment or migration path. Do not test from memory; the standards evolve.
 
-**State file:** `.agents/nose-state.json`
+**State file:** `.project-state.json`
 
 ---
 
@@ -53,12 +53,12 @@ Walk every `describe.skip` / `@pytest.mark.xfail` / untested critical path and p
 ## Step 0: Read State & Context
 
 ```bash
-cat .agents/nose-state.json 2>/dev/null
+cat .project-state.json 2>/dev/null
 ```
 
 Determine target repo:
-- **nose-fe** — Jest + React Testing Library + Playwright (E2E scaffold). Source: `~/Documents/GitHub/TryNose/nose-fe/src/__tests__/`.
-- **nose-be** — pytest + httpx + sqlalchemy test fixtures. Source: `~/Documents/GitHub/TryNose/nose-be/backend/tests/`.
+- **nose-fe** — Jest + React Testing Library + Playwright (E2E scaffold). Source: `PROJECT:frontend-repo/src/__tests__/`.
+- **nose-be** — pytest + httpx + sqlalchemy test fixtures. Source: `PROJECT:backend-repo/backend/tests/`.
 
 Ask the user if ambiguous. Never assume cross-repo scope.
 
@@ -197,7 +197,7 @@ from datetime import datetime, timezone
 mode = sys.argv[1]              # write / repair / ci / audit
 outcome = sys.argv[2]           # pass / fail / partial
 summary = sys.argv[3]
-with open('.agents/nose-state.json') as f: state = json.load(f)
+with open('.project-state.json') as f: state = json.load(f)
 state.setdefault('test_results', {})
 state['test_results'][mode] = {
     'outcome': outcome,
@@ -210,7 +210,7 @@ state['history'].append({
     'action': f'test_{mode}',
     'detail': summary,
 })
-with open('.agents/nose-state.json', 'w') as f: json.dump(state, f, indent=2)
+with open('.project-state.json', 'w') as f: json.dump(state, f, indent=2)
 " "$MODE" "$OUTCOME" "$SUMMARY"
 ```
 

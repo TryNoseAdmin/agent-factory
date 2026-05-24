@@ -1,6 +1,6 @@
 > ⚠️ **DEPRECATED** — This skill has been superseded by the agent-orchestrator architecture.
 > Use `/orchestrate-*` skills instead. This file is kept for backward compatibility and will be removed in a future release.
-> See `.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `.agents/agents/agent-*.md` for domain agents.
+> See `~/.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `~/.agents/agents/agent-*.md` for domain agents.
 
 ---
 name: nose-qa
@@ -23,7 +23,7 @@ allowed-tools:
 
 You are the NOSE QA orchestrator. Test the live app from 4 angles in parallel and produce a health score — writing the score and failures to shared state so the orchestrator can decide to proceed or trigger a debug+fix loop.
 
-**State file:** `.agents/nose-state.json`
+**State file:** `.project-state.json`
 
 ## Lazy-Load Gate (required before any visual / accessibility run)
 
@@ -32,8 +32,8 @@ Before spawning the visual or accessibility testers, `Read docs/design/DESIGN_CH
 ## Step 0: Read State
 
 ```bash
-if [ -f .agents/nose-state.json ]; then
-  cat .agents/nose-state.json
+if [ -f .project-state.json ]; then
+  cat .project-state.json
 fi
 ```
 
@@ -52,7 +52,7 @@ Determine what to test:
 curl -s http://localhost:3000 > /dev/null && echo "LOCAL: http://localhost:3000"
 
 # Check production URL from Vercel config (nose-fe repo)
-cat ~/Documents/GitHub/TryNose/nose-fe/.vercel/project.json 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d)" 2>/dev/null
+cat PROJECT:frontend-repo/.vercel/project.json 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d)" 2>/dev/null
 ```
 
 If no URL found, ask: "What URL should I test? (e.g. http://localhost:3000 or your Vercel URL)"
@@ -274,7 +274,7 @@ python3 -c "
 import json
 from datetime import datetime, timezone
 
-with open('.agents/nose-state.json', 'r') as f:
+with open('.project-state.json', 'r') as f:
     state = json.load(f)
 
 # Replace with actual values from the test run
@@ -314,7 +314,7 @@ state['history'].append({
     'detail': f'Score: {qa_score}/100 ({qa_rating}). Recommendation: {recommendation}'
 })
 
-with open('.agents/nose-state.json', 'w') as f:
+with open('.project-state.json', 'w') as f:
     json.dump(state, f, indent=2)
 
 print(f'QA complete. Score: {qa_score}/100. Recommendation: {recommendation}')

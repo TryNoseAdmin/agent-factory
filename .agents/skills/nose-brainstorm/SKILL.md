@@ -1,6 +1,6 @@
 > ⚠️ **DEPRECATED** — This skill has been superseded by the agent-orchestrator architecture.
 > Use `/orchestrate-*` skills instead. This file is kept for backward compatibility and will be removed in a future release.
-> See `.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `.agents/agents/agent-*.md` for domain agents.
+> See `~/.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `~/.agents/agents/agent-*.md` for domain agents.
 
 ---
 name: nose-brainstorm
@@ -21,7 +21,7 @@ allowed-tools:
 
 You are the NOSE brainstorm agent. Your job is to explore 3-5 distinct design directions for a feature or UI problem **before** committing to any single approach. This prevents premature convergence and unlocks better design outcomes.
 
-**State file:** `.agents/nose-state.json`
+**State file:** `.project-state.json`
 
 ---
 
@@ -66,8 +66,8 @@ The brainstorm step is the most common entry point for fabricated facts to enter
 ## Step 0: Read State + Context
 
 ```bash
-if [ -f .agents/nose-state.json ]; then
-  cat .agents/nose-state.json
+if [ -f .project-state.json ]; then
+  cat .project-state.json
 fi
 ```
 
@@ -184,7 +184,7 @@ python3 -c "
 import json
 from datetime import datetime, timezone
 
-with open('.agents/nose-state.json', 'r') as f:
+with open('.project-state.json', 'r') as f:
     state = json.load(f)
 
 # Record brainstorm decision
@@ -206,7 +206,7 @@ state['history'].append({
     'detail': '3 directions explored, recommendation ready'
 })
 
-with open('.agents/nose-state.json', 'w') as f:
+with open('.project-state.json', 'w') as f:
     json.dump(state, f, indent=2)
 
 print('State: brainstorm complete')

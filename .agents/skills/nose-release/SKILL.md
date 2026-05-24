@@ -1,6 +1,6 @@
 > ⚠️ **DEPRECATED** — This skill has been superseded by the agent-orchestrator architecture.
 > Use `/orchestrate-*` skills instead. This file is kept for backward compatibility and will be removed in a future release.
-> See `.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `.agents/agents/agent-*.md` for domain agents.
+> See `~/.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `~/.agents/agents/agent-*.md` for domain agents.
 
 ---
 name: nose-release
@@ -67,8 +67,8 @@ Read the diff and identify which docs need updating:
 
 | If this changed... | Update this doc... |
 |--------------------|--------------------|
-| API endpoints | `nose-be/backend/app/api/routes/` (live code) or `docs/NOSE_PRODUCTION_ARCHITECTURE.md` |
-| Database schema | `nose-be/backend/app/models/__init__.py` (ORM source of truth) + `docs/schema/perfume-schema-v2.md` |
+| API endpoints | `PROJECT:backend-repo/backend/app/api/routes/` (live code) or `docs/NOSE_PRODUCTION_ARCHITECTURE.md` |
+| Database schema | `PROJECT:backend-repo/backend/app/models/__init__.py` (ORM source of truth) + `docs/schema/perfume-schema-v2.md` |
 | Tech stack | `docs/TECH_STACK.md` |
 | Deployment | `docs/REPOS.md` §Deploy Status (Vercel/Render/Neon targets + env contract) |
 | Brand/design | `docs/brand_guidelines.md` |

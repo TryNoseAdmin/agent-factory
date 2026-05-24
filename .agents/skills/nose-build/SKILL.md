@@ -1,6 +1,6 @@
 > ⚠️ **DEPRECATED** — This skill has been superseded by the agent-orchestrator architecture.
 > Use `/orchestrate-*` skills instead. This file is kept for backward compatibility and will be removed in a future release.
-> See `.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `.agents/agents/agent-*.md` for domain agents.
+> See `~/.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `~/.agents/agents/agent-*.md` for domain agents.
 
 ---
 name: nose-build
@@ -23,8 +23,8 @@ allowed-tools:
 
 You are the NOSE build orchestrator. Your job is to read a ticket, understand the scope, and implement it using domain-specific agents with TDD throughout — writing all progress to shared state so the orchestrator can track and auto-chain.
 
-**State file:** `~/Documents/GitHub/TryNose/nose/.agents/nose-state.json`
-**Coding Standards:** `~/Documents/GitHub/TryNose/nose/docs/CODING_STANDARDS.md` — read and internalize before writing any code.
+**State file:** `PROJECT:brain-repo/.project-state.json`
+**Coding Standards:** `PROJECT:brain-repo/docs/CODING_STANDARDS.md` — read and internalize before writing any code.
 
 ---
 
@@ -140,8 +140,8 @@ Before writing any code, verify every item below. These are not suggestions — 
 Always read state first before doing anything:
 
 ```bash
-if [ -f .agents/nose-state.json ]; then
-  cat .agents/nose-state.json
+if [ -f .project-state.json ]; then
+  cat .project-state.json
 else
   echo "No state file found. Initialize with /nose-plan first."
 fi
@@ -181,7 +181,7 @@ If this ticket touches frontend UI (new page, new component, restyling, any chan
 
 1. **Contract exists in Notion.** Fetch the ticket via `mcp__claude_ai_Notion__notion-fetch`. Find the "Design System Contract" section in the body (or under `## §Full Plan` → `### Design Direction`).
 2. **Contract uses token names, not raw hex.** Every cell must reference a `var(--...)` token or a utility class name — never an inline hex or `rgba(...)`.
-3. **Every referenced token exists in tokens.css.** Read `~/Documents/GitHub/TryNose/nose-fe/src/styles/tokens.css` (and `tokens.brand-extension.css`) and grep for each token the contract cites. If any are missing, they must be added to tokens.css FIRST (or the contract must be corrected).
+3. **Every referenced token exists in tokens.css.** Read `PROJECT:frontend-repo/src/styles/tokens.css` (and `tokens.brand-extension.css`) and grep for each token the contract cites. If any are missing, they must be added to tokens.css FIRST (or the contract must be corrected).
 
 **If the contract is missing:**
 ```
@@ -193,7 +193,7 @@ Please run one of:
   /nose-plan                                        (re-synthesize into the Notion ticket body)
   /nose-ticket update TASK-XXX design-spec          (add contract to the Notion ticket directly)
 
-The contract must map every element (cards, CTAs, headings, pills, icons) to a utility class + CSS variable token from nose-fe/src/styles/tokens.css. No raw hex. No rgba literals."
+The contract must map every element (cards, CTAs, headings, pills, icons) to a utility class + CSS variable token from PROJECT:frontend-repo/src/styles/tokens.css. No raw hex. No rgba literals."
 
 Then exit the skill.
 ```
@@ -304,7 +304,7 @@ python3 -c "
 import json, sys
 from datetime import datetime, timezone
 
-with open('.agents/nose-state.json', 'r') as f:
+with open('.project-state.json', 'r') as f:
     state = json.load(f)
 
 state['ticket_id'] = '$TICKET_ID'
@@ -318,7 +318,7 @@ state['history'].append({
     'detail': 'Building ticket: $TICKET_ID on branch: $BRANCH'
 })
 
-with open('.agents/nose-state.json', 'w') as f:
+with open('.project-state.json', 'w') as f:
     json.dump(state, f, indent=2)
 
 print('State: build started')
@@ -341,21 +341,21 @@ Each domain lives in a separate repo. Sub-agents must `cd` to the correct direct
 
 | Domain | Repo | Working directory |
 |--------|------|-------------------|
-| Frontend | `nose-fe` | `~/Documents/GitHub/TryNose/nose-fe` |
-| Backend | `nose-be` | `~/Documents/GitHub/TryNose/nose-be` |
-| Database | `nose-be` | `~/Documents/GitHub/TryNose/nose-be/database` |
-| State / docs | `nose` | `~/Documents/GitHub/TryNose/nose` |
+| Frontend | `nose-fe` | `PROJECT:frontend-repo` |
+| Backend | `nose-be` | `PROJECT:backend-repo` |
+| Database | `nose-be` | `PROJECT:backend-repo/database` |
+| State / docs | `nose` | `PROJECT:brain-repo` |
 
-**State file** stays in `nose` repo. Always read/write it from: `~/Documents/GitHub/TryNose/nose/.agents/nose-state.json`
+**State file** stays in `nose` repo. Always read/write it from: `PROJECT:brain-repo/.project-state.json`
 
 **Feature branches** must be created in each repo that has changes:
 ```bash
 # In nose-fe (if frontend work):
-cd ~/Documents/GitHub/TryNose/nose-fe
+cd PROJECT:frontend-repo
 git checkout -b feature/task-[NUMBER]-[slug]
 
 # In nose-be (if backend work):
-cd ~/Documents/GitHub/TryNose/nose-be
+cd PROJECT:backend-repo
 git checkout -b feature/task-[NUMBER]-[slug]
 ```
 
@@ -366,7 +366,7 @@ python3 -c "
 import json
 from datetime import datetime, timezone
 
-with open('.agents/nose-state.json', 'r') as f:
+with open('.project-state.json', 'r') as f:
     state = json.load(f)
 
 # Add the task list (replace with actual tasks derived from the ticket)
@@ -381,7 +381,7 @@ state['progress']['completed'] = []
 state['progress']['percent'] = 0
 state['updated_at'] = datetime.now(timezone.utc).isoformat()
 
-with open('.agents/nose-state.json', 'w') as f:
+with open('.project-state.json', 'w') as f:
     json.dump(state, f, indent=2)
 
 print('Task list written to state')
@@ -410,7 +410,7 @@ python3 -c "
 import json
 from datetime import datetime, timezone
 
-with open('.agents/nose-state.json', 'r') as f:
+with open('.project-state.json', 'r') as f:
     state = json.load(f)
 
 completed_task = '[task-description]'
@@ -427,7 +427,7 @@ state['history'].append({
     'detail': completed_task
 })
 
-with open('.agents/nose-state.json', 'w') as f:
+with open('.project-state.json', 'w') as f:
     json.dump(state, f, indent=2)
 
 print(f'Progress: {done}/{total} tasks ({state[\"progress\"][\"percent\"]}%)')
@@ -436,21 +436,21 @@ print(f'Progress: {done}/{total} tasks ({state[\"progress\"][\"percent\"]}%)')
 
 ### Frontend Work
 
-**Repo:** `nose-fe` — working directory: `~/Documents/GitHub/TryNose/nose-fe`
+**Repo:** `nose-fe` — working directory: `PROJECT:frontend-repo`
 
-Read `.agents/agents/frontend-developer.md` for the full constraints, then implement.
+Read `~/.agents/agents/frontend-developer.md` for the full constraints, then implement.
 
 
 ### Backend Work
 
-**Repo:** `nose-be` — working directory: `~/Documents/GitHub/TryNose/nose-be`
+**Repo:** `nose-be` — working directory: `PROJECT:backend-repo`
 
-Read `.agents/agents/backend-developer.md` for the full constraints, then implement.
+Read `~/.agents/agents/backend-developer.md` for the full constraints, then implement.
 
 
 ### Database Work
 
-Read `.agents/agents/database-developer.md` for the full constraints, then implement.
+Read `~/.agents/agents/database-developer.md` for the full constraints, then implement.
 
 
 ## Step 6: TDD Throughout
@@ -477,13 +477,13 @@ Before declaring build complete, run the linters. Fix all violations — do not 
 
 ```bash
 # nose-fe: lint + type check
-cd ~/Documents/GitHub/TryNose/nose-fe
+cd PROJECT:frontend-repo
 npx eslint src/ --max-warnings 0
 npx tsc --noEmit
 npx prettier --check src/
 
 # nose-be: ruff + type check
-cd ~/Documents/GitHub/TryNose/nose-be
+cd PROJECT:backend-repo
 python -m ruff check backend/app/
 python -m ruff format --check backend/app/
 python -m mypy backend/app/ --ignore-missing-imports
@@ -515,7 +515,7 @@ python3 -c "
 import json
 from datetime import datetime, timezone
 
-with open('.agents/nose-state.json', 'r') as f:
+with open('.project-state.json', 'r') as f:
     state = json.load(f)
 
 state['current_phase'] = 'ready_to_review'
@@ -529,7 +529,7 @@ state['history'].append({
     'detail': 'All tasks complete, ready for review'
 })
 
-with open('.agents/nose-state.json', 'w') as f:
+with open('.project-state.json', 'w') as f:
     json.dump(state, f, indent=2)
 
 print('State: build complete, ready for /review')

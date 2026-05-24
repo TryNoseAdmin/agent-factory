@@ -1,6 +1,6 @@
 > ⚠️ **DEPRECATED** — This skill has been superseded by the agent-orchestrator architecture.
 > Use `/orchestrate-*` skills instead. This file is kept for backward compatibility and will be removed in a future release.
-> See `.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `.agents/agents/agent-*.md` for domain agents.
+> See `~/.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `~/.agents/agents/agent-*.md` for domain agents.
 
 # NOSE Orchestrator — System Brain (v2)
 
@@ -21,7 +21,7 @@ policy: "Zero hallucination, Zero tolerance"
 ## 📋 PURPOSE
 
 The orchestrator is the **decision engine** that:
-- ✅ Reads from global state (`.agents/nose-state.json`)
+- ✅ Reads from global state (`.project-state.json`)
 - ✅ Decides which skill to run next
 - ✅ Triggers skills automatically
 - ✅ Manages feedback loops (review → fix → review)
@@ -70,7 +70,7 @@ The orchestrator is the **decision engine** that:
 
 ```python
 def initialize():
-  state = read_state('.agents/nose-state.json')
+  state = read_state('.project-state.json')
 
   if not state.get('session_id'):
     create_new_session(feature_name=user_input)
@@ -516,7 +516,7 @@ def escalate_to_user(state, reason):
   Status: {state['status']}
   Feature: {state['feature_name']}
 
-  Please review state at: .agents/nose-state.json
+  Please review state at: .project-state.json
   Then provide instruction to proceed.
   """)
 
@@ -612,7 +612,7 @@ When orchestrator completes a feature:
 # If interrupted, orchestrator resumes from state
 /nose-orchestrator --feature "search-filter"
 
-# Reads .agents/nose-state.json
+# Reads .project-state.json
 # Continues from current_phase
 ```
 

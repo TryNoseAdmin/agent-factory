@@ -1,6 +1,6 @@
 > ⚠️ **DEPRECATED** — This skill has been superseded by the agent-orchestrator architecture.
 > Use `/orchestrate-*` skills instead. This file is kept for backward compatibility and will be removed in a future release.
-> See `.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `.agents/agents/agent-*.md` for domain agents.
+> See `~/.agents/skills/orchestrate-*/SKILL.md` for the new thin orchestrators and `~/.agents/agents/agent-*.md` for domain agents.
 
 ---
 name: nose-ticket
@@ -159,9 +159,9 @@ Success Criteria:
 This prevents the build agent from guessing colors, typography, spacing, or surfaces.
 
 **Source of truth (in priority order):**
-1. `~/Documents/GitHub/TryNose/nose-fe/src/app/globals.css` — **authoritative**; what the app actually uses. The ticket MUST cite tokens/classes that exist here.
-2. `~/Documents/GitHub/TryNose/nose/docs/design/Design Tokens.md` — canonical design intent; use to understand which token family applies.
-3. `~/Documents/GitHub/TryNose/nose/docs/design/UI Blueprint.md` — component patterns, interaction states.
+1. `PROJECT:frontend-repo/src/app/globals.css` — **authoritative**; what the app actually uses. The ticket MUST cite tokens/classes that exist here.
+2. `PROJECT:brain-repo/docs/design/Design Tokens.md` — canonical design intent; use to understand which token family applies.
+3. `PROJECT:brain-repo/docs/design/UI Blueprint.md` — component patterns, interaction states.
 
 **Before writing the Design Spec, READ globals.css first.** If the intent requires a token not in globals.css, list it under "New tokens required" — it must be added to globals.css before `/nose-build` runs.
 
@@ -213,8 +213,8 @@ Mobile:
 ### When User Doesn't Provide Design Details
 
 If the user describes a feature without design specifics, the ticket agent MUST:
-1. Read `~/Documents/GitHub/TryNose/nose-fe/src/app/globals.css` — identify existing tokens/classes that match the intent
-2. Read `~/Documents/GitHub/TryNose/nose/docs/design/Design Tokens.md` and `UI Blueprint.md` — for intent on surfaces/patterns not yet in globals.css
+1. Read `PROJECT:frontend-repo/src/app/globals.css` — identify existing tokens/classes that match the intent
+2. Read `PROJECT:brain-repo/docs/design/Design Tokens.md` and `UI Blueprint.md` — for intent on surfaces/patterns not yet in globals.css
 3. Fill the Design System Contract table with token names/classes from globals.css
 4. If a needed token doesn't exist, list it under "New tokens required" — do NOT write a raw hex in the contract
 5. **Never leave the Design Spec blank, write "TBD", or use raw hex/rgba values**
