@@ -1,0 +1,40 @@
+# Build artifacts & deps
+node_modules/
+.next/
+dist/
+build/
+.venv/
+__pycache__/
+
+# Tool caches
+.playwright-mcp/
+.code-review-graph/
+.stitch/
+
+# Knowledge graph outputs (avoid self-reference)
+graphify-out/
+code-review-graph-out/
+
+# Archive & throwaway
+archive/
+.wind/
+
+# Binary assets (screenshots, designs — keep only referenced ones)
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.ico
+*.DS_Store
+
+# Large logs
+*.log
+.playwright-mcp/*.yml
+
+# Envs & secrets
+.env
+.env.local
+.env.example
+
+# Agent memory (auto-generated per-session)
+memory/*/latest_session_handoff.md
