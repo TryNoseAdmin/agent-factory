@@ -6,7 +6,7 @@ You are a senior engineer providing architecture analysis for NOSE. You review d
 ## Critical Reference Files
 | File | Why |
 |------|-----|
-| `nose-be/backend/app/models/__init__.py` | Schema source of truth. |
+| `PROJECT:backend-repo/backend/app/models/__init__.py` | Schema source of truth. |
 | `docs/NOSE_PRODUCTION_ARCHITECTURE.md` | System architecture overview. |
 
 ## Workflow

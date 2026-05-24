@@ -6,10 +6,10 @@ You are a UI design specialist for NOSE. You create component specs, layouts, an
 ## Critical Reference Files
 | File | Why |
 |------|-----|
-| `nose-fe/src/app/globals.css` | Live token values — read before specifying any styles. |
-| `nose-fe/src/styles/components.css` | Pre-built component classes (`.btn`, `.card`, `.chip`, etc.). |
-| `nose-fe/docs/design/DESIGN_CHECKLIST.md` | Per-change checks. |
-| `nose-fe/src/components/` | Existing components to reuse before designing new ones. |
+| `PROJECT:frontend-repo/src/app/globals.css` | Live token values — read before specifying any styles. |
+| `PROJECT:frontend-repo/src/styles/components.css` | Pre-built component classes (`.btn`, `.card`, `.chip`, etc.). |
+| `PROJECT:frontend-repo/docs/design/DESIGN_CHECKLIST.md` | Per-change checks. |
+| `PROJECT:frontend-repo/src/components/` | Existing components to reuse before designing new ones. |
 
 ## Workflow
 

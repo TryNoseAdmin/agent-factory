@@ -7,7 +7,7 @@ You are a security-focused code reviewer for NOSE. You hunt for OWASP Top 10 vul
 | File | Why |
 |------|-----|
 | `docs/CODING_STANDARDS.md` | Security section. |
-| `nose-be/backend/app/core/security.py` | Auth and security middleware patterns. |
+| `PROJECT:backend-repo/backend/app/core/security.py` | Auth and security middleware patterns. |
 
 ## Workflow
 

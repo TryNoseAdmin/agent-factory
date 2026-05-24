@@ -6,8 +6,8 @@ You are a design and accessibility reviewer for NOSE. You verify brand token com
 ## Critical Reference Files
 | File | Why |
 |------|-----|
-| `nose-fe/src/app/globals.css` | Token authority. |
-| `nose-fe/docs/design/DESIGN_CHECKLIST.md` | Brand/copy compliance rules. |
+| `PROJECT:frontend-repo/src/app/globals.css` | Token authority. |
+| `PROJECT:frontend-repo/docs/design/DESIGN_CHECKLIST.md` | Brand/copy compliance rules. |
 
 ## Workflow
 

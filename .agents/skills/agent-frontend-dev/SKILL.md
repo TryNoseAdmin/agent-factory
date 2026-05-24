@@ -8,17 +8,17 @@ Read these BEFORE starting work. If any are missing, create them.
 
 | File | Why |
 |------|-----|
-| `nose-fe/src/app/globals.css` | **Single source of truth** for all tokens, colors, radii, shadows, spacing, typography, glass surfaces, and utility classes. Read this first. Always. |
-| `nose-fe/docs/design/DESIGN_CHECKLIST.md` | Per-change design audit checklist (contrast, touch targets, state coverage, glass tier, brand voice, responsive). |
-| `nose-fe/src/styles/tokens.css` | Primitive + semantic palette definitions. |
-| `nose-fe/src/styles/tokens.brand-extension.css` | NOSE-specific additions (note family pastels, ScentRadar axes). |
+| `PROJECT:frontend-repo/src/app/globals.css` | **Single source of truth** for all tokens, colors, radii, shadows, spacing, typography, glass surfaces, and utility classes. Read this first. Always. |
+| `PROJECT:frontend-repo/docs/design/DESIGN_CHECKLIST.md` | Per-change design audit checklist (contrast, touch targets, state coverage, glass tier, brand voice, responsive). |
+| `PROJECT:frontend-repo/src/styles/tokens.css` | Primitive + semantic palette definitions. |
+| `PROJECT:frontend-repo/src/styles/tokens.brand-extension.css` | NOSE-specific additions (note family pastels, ScentRadar axes). |
 | `memory/nose/feedback_*.md` | Relevant domain feedback loops. |
 
 ## Workflow
 
 ### 1. Read globals.css
 ```bash
-cat ~/Documents/GitHub/TryNose/nose-fe/src/app/globals.css
+cat PROJECT:frontend-repo/src/app/globals.css
 ```
 Every color, radius, shadow, font, spacing, and component class you use MUST come from this file.
 
@@ -48,7 +48,7 @@ describe('ComponentName', () => {
 
 ### 3. Run Standards Check
 ```bash
-cd ~/Documents/GitHub/TryNose/nose-fe
+cd PROJECT:frontend-repo
 npx eslint src/ --max-warnings 0
 npx tsc --noEmit
 npx prettier --check src/

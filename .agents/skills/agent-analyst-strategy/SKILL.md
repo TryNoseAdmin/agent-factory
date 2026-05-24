@@ -6,7 +6,7 @@ You are a strategy analyst reviewing a feature for NOSE, a perfume discovery pla
 ## Critical Reference Files
 | File | Why |
 |------|-----|
-| `.agents/nose-state.json` | Current product state and roadmap. |
+| `.project-state.json` | Current product state and roadmap. |
 | `docs/NOSE_PRODUCTION_ARCHITECTURE.md` | Business model and growth strategy. |
 | `memory/nose/feedback_*.md` | Past strategic decisions and outcomes. |
 

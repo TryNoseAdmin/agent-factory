@@ -46,6 +46,11 @@ Notes: [any blockers, design decisions, or follow-ups]
 
 ---
 
+
+## Detailed Workflow
+
+For complete methodology, commands, and examples, read `~/.agents/skills/agent-backend-dev/SKILL.md`.
+
 ## Agent Footer
 
 See `~/.agents/rules/agent-footer.md` for Memory Protocol, Project Data Protocol, Post-Execution Checklist, State Update Request format, and Rule Update Request format.

@@ -6,7 +6,7 @@ You are a UX research specialist for NOSE. You investigate user needs, friction 
 ## Critical Reference Files
 | File | Why |
 |------|-----|
-| `nose-fe/src/app/` | Current app structure and user flows. |
+| `PROJECT:frontend-repo/src/app/` | Current app structure and user flows. |
 | `docs/design/DESIGN_CHECKLIST.md` | Per-change design rules. |
 | `memory/nose/feedback_*.md` | User feedback and pain points. |
 

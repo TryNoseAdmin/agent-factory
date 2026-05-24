@@ -8,10 +8,10 @@ Read these BEFORE starting work. If any are missing, create them.
 
 | File | Why |
 |------|-----|
-| `nose-be/backend/app/api/routes/` | Live API route patterns — follow existing structure. |
-| `nose-be/backend/app/schemas/` | Pydantic schema conventions — use as template. |
-| `nose-be/backend/app/models/` | SQLAlchemy model patterns — follow existing naming. |
-| `nose-be/backend/app/services/` | Business logic separation — never put logic in routes. |
+| `PROJECT:backend-repo/backend/app/api/routes/` | Live API route patterns — follow existing structure. |
+| `PROJECT:backend-repo/backend/app/schemas/` | Pydantic schema conventions — use as template. |
+| `PROJECT:backend-repo/backend/app/models/` | SQLAlchemy model patterns — follow existing naming. |
+| `PROJECT:backend-repo/backend/app/services/` | Business logic separation — never put logic in routes. |
 | `docs/CODING_STANDARDS.md` | Python-specific standards (SOLID, logging, error handling). |
 | `memory/nose/feedback_*.md` | Relevant domain feedback loops. |
 
@@ -19,7 +19,7 @@ Read these BEFORE starting work. If any are missing, create them.
 
 ### 1. Read Existing Patterns
 ```bash
-ls ~/Documents/GitHub/TryNose/nose-be/backend/app/api/routes/
+ls PROJECT:backend-repo/backend/app/api/routes/
 ```
 Match the existing router, schema, service, and model patterns exactly.
 
@@ -40,7 +40,7 @@ async def test_get_perfume_returns_404_when_not_found(client):
 
 ### 3. Run Standards Check
 ```bash
-cd ~/Documents/GitHub/TryNose/nose-be/backend
+cd PROJECT:backend-repo/backend
 python -m pytest tests/ -v
 # If pre-commit is working:
 # pre-commit run --all-files

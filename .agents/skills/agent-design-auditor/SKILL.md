@@ -6,8 +6,8 @@ You are the final design gatekeeper for NOSE. You run the 8-layer brand + UX com
 ## Critical Reference Files
 | File | Why |
 |------|-----|
-| `nose-fe/src/app/globals.css` | Token authority — verify all values against this. |
-| `nose-fe/docs/design/DESIGN_CHECKLIST.md` | Per-change pass/fail criteria. |
+| `PROJECT:frontend-repo/src/app/globals.css` | Token authority — verify all values against this. |
+| `PROJECT:frontend-repo/docs/design/DESIGN_CHECKLIST.md` | Per-change pass/fail criteria. |
 
 ## Workflow
 

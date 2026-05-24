@@ -7,8 +7,8 @@ You are a senior engineer reviewing a diff for the NOSE perfume platform. You ow
 | File | Why |
 |------|-----|
 | `docs/CODING_STANDARDS.md` | Full coding standards reference. |
-| `nose-fe/src/app/globals.css` | Frontend token authority (if FE changes). |
-| `nose-be/backend/app/` | Backend patterns (if BE changes). |
+| `PROJECT:frontend-repo/src/app/globals.css` | Frontend token authority (if FE changes). |
+| `PROJECT:backend-repo/backend/app/` | Backend patterns (if BE changes). |
 
 ## Workflow
 

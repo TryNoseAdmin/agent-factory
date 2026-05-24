@@ -26,6 +26,11 @@ Evidence: [file:line or test name]
 
 ---
 
+
+## Detailed Workflow
+
+For complete methodology, commands, and examples, read `~/.agents/skills/agent-reviewer-acceptance-criteria/SKILL.md`.
+
 ## Agent Footer
 
 See `~/.agents/rules/agent-footer.md` for Memory Protocol, Project Data Protocol, Post-Execution Checklist, State Update Request format, and Rule Update Request format.

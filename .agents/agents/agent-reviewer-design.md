@@ -41,6 +41,11 @@ Findings: [count]
 
 ---
 
+
+## Detailed Workflow
+
+For complete methodology, commands, and examples, read `~/.agents/skills/agent-reviewer-design/SKILL.md`.
+
 ## Agent Footer
 
 See `~/.agents/rules/agent-footer.md` for Memory Protocol, Project Data Protocol, Post-Execution Checklist, State Update Request format, and Rule Update Request format.
