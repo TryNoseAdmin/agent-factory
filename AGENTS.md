@@ -31,6 +31,60 @@ This file follows the [AGENTS.md spec](https://agents.md/) — a portable, agent
 
 ---
 
+# New Project Bootstrap
+
+When creating a new project under this infrastructure, scaffold these files in the project's brain repo:
+
+```
+<project>/
+├── PROJECT.md                ← Project-specific details: brand voice, SEO, design tokens, epics
+├── .project-context.md       ← Repos, stack, testing commands, conventions
+├── .project-state.json       ← Global project state (orchestrators write here)
+├── .project-config.json      ← Cleanup schedule, integrations, ticket system ID
+├── CHANGELOG.md              ← Per-project release history
+├── VERSION                   ← Semantic version (tracked by /ship)
+├── memory/
+│   └── MEMORY.md             ← Project memory index (feedback, facts, references)
+└── docs/
+    ├── PROJECT_BRIEFING.md   ← Vision, target market, MVP scope
+    ├── TECH_STACK.md         ← Dependencies, infrastructure choices
+    └── REPOS.md              ← Repo map + routing rules
+```
+
+## Why No Project-Level AGENTS.md
+
+**Only one `AGENTS.md` exists — in `agent-factory/`.** Having multiple `AGENTS.md` files causes:
+- Inconsistent loading order across different agents/tools
+- Risk of universal rules diverging between projects
+- Confusion about which file governs which directory
+
+**`PROJECT.md` is the single project-specific file.** It contains ONLY what differs per project:
+- Brand voice copy table (UI moments)
+- SEO URL patterns and content rules
+- Design token references
+- Product epics and priorities
+- Domain-specific constraints
+
+**`.project-context.md`** stays as the *technical* context file — repos, stack, test commands, lint commands. Kept separate from `PROJECT.md` so product details (brand, SEO) can be updated without touching technical config.
+
+**Example:** If agent-factory says "never commit to main," `PROJECT.md` does NOT repeat it. If the project says "all detail pages use `/item/[name]` slugs," that ONLY lives in `PROJECT.md`.
+
+## Template Files
+
+Copy from `nose/` and adapt:
+- `PROJECT.md` — brand voice, SEO rules, design tokens, epics
+- `.project-context.md` — repos, stack, testing commands
+- `.project-state.json` — initialize empty `{}`; orchestrators populate it
+- `memory/MEMORY.md` — follow the one-line-per-entry index pattern
+
+## After Scaffolding
+
+1. Add project to `agent-factory/memory/projects/MEMORY.md`
+2. Create `agent-factory/memory/projects/<project>.md` with repo map + key files
+3. Run `~/.agents/scripts/setup-project.sh` if available
+
+---
+
 # Memory Loading (read this on cold start)
 
 Persistent memory for this infrastructure lives at:

@@ -20,4 +20,4 @@
 
 ## Recent Changes
 
-- 2026-05-24: Moved `.agents/` from `nose` → `agent-factory`. Created generalized `AGENTS.md`.
+- 2026-05-24: **v1.0.0 released** — Migrated `.agents/` from `nose` → `agent-factory`. Added generalized `AGENTS.md`, `docs/SKILL_ARCHITECTURE.md`, `docs/STATE_SCHEMA.md`, `memory/` structure, `VERSION`, `CHANGELOG.md`.
