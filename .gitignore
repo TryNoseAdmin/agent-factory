@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# Agent memory (auto-generated per-session)
+memory/*/latest_session_handoff.md
+
+# Envs & secrets
+.env
+.env.local
