@@ -28,4 +28,4 @@ Risks: [list]
 
 ## Agent Footer
 
-See `.agents/rules/agent-footer.md` for Memory Protocol, Project Data Protocol, Post-Execution Checklist, State Update Request format, and Rule Update Request format.
+See `~/.agents/rules/agent-footer.md` for Memory Protocol, Project Data Protocol, Post-Execution Checklist, State Update Request format, and Rule Update Request format.

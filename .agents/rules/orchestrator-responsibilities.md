@@ -58,8 +58,8 @@ Check each agent's output for `## Rule Update Request` sections.
 
 agent-rule-keeper workflow:
 ```
-ReadFile('.agents/rules/universal.md')
-ReadFile('.agents/agents/agent-rule-keeper.md')
+ReadFile('~/.agents/rules/universal.md')
+ReadFile('~/.agents/agents/agent-rule-keeper.md')
 [Rule Update Requests from this session]
 → validate, deduplicate, apply to target rule or pattern file
 ```
@@ -68,7 +68,7 @@ ReadFile('.agents/agents/agent-rule-keeper.md')
 Spot-check that agents wrote to their memory files:
 ```bash
 # Quick check — last 20 lines of each agent's memory
-for f in .agents/agent-memory/*.md; do
+for f in ~/.agents/agent-memory/*.md; do
   echo "=== $(basename $f) ==="
   tail -n 20 "$f"
 done
@@ -76,7 +76,7 @@ done
 If an agent's memory is stale or empty, note it in your report.
 
 ### 4. Use Output Styles
-Format your final synthesis using the appropriate template from `.agents/output-styles/`:
+Format your final synthesis using the appropriate template from `~/.agents/output-styles/`:
 - Build/ship reports → `standup-report.md`
 - Review findings → `review-report.md`
 - QA results → `qa-report.md`

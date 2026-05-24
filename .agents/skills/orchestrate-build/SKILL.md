@@ -18,7 +18,7 @@ Read a Notion ticket, classify scope, spawn domain-specific agents (frontend, ba
 For EACH agent you spawn, construct the prompt as:
 
 ```
-{ReadFile('.agents/rules/universal.md')}
+{ReadFile('~/.agents/rules/universal.md')}
 
 ---
 
@@ -26,7 +26,7 @@ For EACH agent you spawn, construct the prompt as:
 
 ---
 
-{ReadFile('.agents/agents/agent-<name>.md')}
+{ReadFile('~/.agents/agents/agent-<name>.md')}
 
 ---
 

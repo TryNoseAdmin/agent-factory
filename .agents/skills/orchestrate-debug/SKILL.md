@@ -8,7 +8,7 @@ Systematically reproduce, isolate, and fix bugs using the 4-phase methodology.
 For EACH agent you spawn, construct the prompt as:
 
 ```
-{ReadFile('.agents/rules/universal.md')}
+{ReadFile('~/.agents/rules/universal.md')}
 
 ---
 
@@ -16,7 +16,7 @@ For EACH agent you spawn, construct the prompt as:
 
 ---
 
-{ReadFile('.agents/agents/agent-<name>.md')}
+{ReadFile('~/.agents/agents/agent-<name>.md')}
 
 ---
 

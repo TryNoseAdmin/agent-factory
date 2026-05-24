@@ -68,11 +68,11 @@ Read `.project-context.md` before making any file modifications.
 ## Agent Memory Protocol (Auto)
 
 **On every spawn, you MUST:**
-1. Read your agent memory file at `.agents/agent-memory/<your-agent-name>.md`.
+1. Read your agent memory file at `~/.agents/agent-memory/<your-agent-name>.md`.
 2. Use prior context, learnings, and pipeline state to inform your work.
 
 **Before exiting, you MUST:**
-1. Write back to `.agents/agent-memory/<your-agent-name>.md` with:
+1. Write back to `~/.agents/agent-memory/<your-agent-name>.md` with:
    - What you did this session
    - New learnings or decisions
    - Open questions or blockers
@@ -104,7 +104,7 @@ If your work requires a project state update (ticket status, new blocker, comple
 
 ## Output Styles Protocol
 
-Use the appropriate template from `.agents/output-styles/`:
+Use the appropriate template from `~/.agents/output-styles/`:
 - Build/ship reports → `standup-report.md`
 - Review findings → `review-report.md`
 - QA results → `qa-report.md`
@@ -131,7 +131,7 @@ You must recognize implicit commands and auto-route to the correct workflow with
 | "brand check" / "copy review" / "is this on-brand" | `orchestrate-plan` — spawn agent-brand-auditor + agent-copy-generator |
 | "release this" / "tag this" / "version bump" | `orchestrate-release` — docs, changelog, git tag |
 | "cleanup" / "maintenance" / "audit memory" | spawn `agent-cleanup` directly |
-| "health check" / "status check" | run `.agents/scripts/health-check.sh` |
+| "health check" / "status check" | run `~/.agents/scripts/health-check.sh` |
 
 **Never ask "which skill should I use?"** — infer from context and trigger immediately.
 

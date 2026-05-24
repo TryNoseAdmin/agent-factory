@@ -8,7 +8,7 @@ Classify a diff, spawn ONLY the reviewers that apply, synthesize findings into a
 For EACH agent you spawn, construct the prompt as:
 
 ```
-{ReadFile('.agents/rules/universal.md')}
+{ReadFile('~/.agents/rules/universal.md')}
 
 ---
 
@@ -16,7 +16,7 @@ For EACH agent you spawn, construct the prompt as:
 
 ---
 
-{ReadFile('.agents/agents/agent-<name>.md')}
+{ReadFile('~/.agents/agents/agent-<name>.md')}
 
 ---
 

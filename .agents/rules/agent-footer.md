@@ -6,11 +6,11 @@ Shared reference for all agent files. Include this instead of duplicating in eve
 
 ## Memory
 
-**Read on spawn:** `.agents/agent-memory/<your-agent-name>.md` (or `state.json` if applicable)
+**Read on spawn:** `~/.agents/agent-memory/<your-agent-name>.md` (or `state.json` if applicable)
 - Load prior context, learnings, and pipeline state.
 - Use this to avoid repeating work or re-asking questions already answered.
 
-**Write before exit:** `.agents/agent-memory/<your-agent-name>.md`
+**Write before exit:** `~/.agents/agent-memory/<your-agent-name>.md`
 Append a new entry with:
 - **Session summary:** what you did
 - **Learnings:** new patterns, decisions, or gotchas
