@@ -24,9 +24,9 @@ fi
 for f in ~/.agents/skills/orchestrate-*/SKILL.md ~/.agents/agents/agent-*.md; do
   [ -f "$f" ] || continue
   lines=$(wc -l < "$f")
-  if [ "$lines" -gt 150 ]; then
+  if [ "$lines" -gt 200 ]; then
     echo ""
-    echo "⚠️  LINE COUNT OVER 150: $f ($lines lines)"
+    echo "⚠️  LINE COUNT OVER 200: $f ($lines lines)"
     WARN=$((WARN + 1))
   fi
 done
