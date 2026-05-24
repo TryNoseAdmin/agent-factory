@@ -292,7 +292,7 @@ Ready for /orchestrate-review
 Any agent BLOCKED? → STOP, ask user
 Any test failing? → Re-spawn failing agent in fix mode
 Any lint failing? → Re-spawn failing agent in fix mode
-Any gate failing? → Fix gate issue, re-run from Step 7
+Any gate failing? → Fix gate issue, re-run from Step 6
 All green? → Commit + update state + prompt for review
 ```
 
