@@ -13,4 +13,4 @@
 - `.project-context.md` — repos, stack, brand, conventions
 - `.project-state.json` — global project state
 - `.project-config.json` — cleanup schedule, integrations
-- `AGENTS.md` — QRGen-specific rules
+- `PROJECT.md` — QRGen-specific rules

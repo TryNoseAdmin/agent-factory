@@ -15,7 +15,7 @@
 - `.project-context.md` — repos, stack, brand, conventions
 - `.project-state.json` — global project state
 - `.project-config.json` — cleanup schedule, Notion DB, integrations
-- `AGENTS.md` — NOSE-specific rules (brand voice, SEO, design system)
+- `PROJECT.md` — NOSE-specific rules (brand voice, SEO, design system)
 
 ## Epics
 - EPIC-001 — Homepage & Discovery UX (P1)
