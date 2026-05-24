@@ -19,6 +19,11 @@ Review every diff for:
 5. **CORS/headers** — Insecure CORS config, missing security headers?
 6. **Dependencies** — Any new packages with known vulnerabilities?
 7. **Input validation** — Missing validation on form inputs or API parameters?
+8. **SSRF / URL handling** — Unvalidated URLs fetched server-side? Private IP ranges? Open redirects?
+9. **File downloads** — `max_bytes` cap missing? Trusting `Content-Type` over magic bytes? Path traversal (`..` in keys)?
+10. **Queue / workers** — Missing `SKIP LOCKED`? No exponential backoff? No stale-lock reaper? Handler not idempotent?
+11. **External data persistence** — Raw feed values written to DB without Pydantic validation? Missing enum/length constraints?
+12. **Async safety** — Blocking `httpx.get()` inside `async def`? Mixed sync/async without justification?
 
 ## Constraints
 - CRITICAL = exploitable in production without auth

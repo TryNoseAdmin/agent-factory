@@ -15,6 +15,68 @@ Read these BEFORE starting work. If any are missing, create them.
 | `docs/CODING_STANDARDS.md` | Python-specific standards (SOLID, logging, error handling). |
 | `memory/$PROJECT_NAME/feedback_*.md` | Relevant domain feedback loops. |
 
+## Pre-flight: External-Data & Queue Gate
+
+If this ticket touches **external feeds, remote downloads, background workers, or HTTP calls to third-party hosts**, verify every item below before writing application code:
+
+**Parsing untrusted input:**
+- [ ] XML: use `defusedxml` — NEVER stdlib `xml.etree` on external bytes
+- [ ] JSON: use Pydantic `.model_validate(dict)` — never bare `.get()` chains
+
+**URL handling (SSRF prevention):**
+- [ ] Validate URLs BEFORE fetching — reject non-https, private ranges, loopback
+- [ ] `httpx.AsyncClient(..., follow_redirects=False)` or re-validate each redirect target
+- [ ] Re-validate affiliate/retailer URLs before DB write
+
+**Downloading remote content:**
+- [ ] `max_bytes` cap (e.g. 10 MB images, 50 MB feeds)
+- [ ] Magic-byte sniff on first 8–12 bytes — NEVER trust `Content-Type` header
+- [ ] Re-check key does not contain `..` segments before CDN upload
+
+**External field values written to DB:**
+- [ ] Enum-validate string fields consumed by code
+- [ ] Length-cap free-text fields at boundary
+- [ ] Never persist raw feed values without validator
+
+**Async correctness:**
+- [ ] If ANY function is `async def`, ALL HTTP calls must be `await client.get(...)` — never blocking `httpx.get()`
+- [ ] If mixing sync + async, document WHY inline
+
+**Queue / worker completeness:**
+- [ ] Run-loop: claim → dispatch → mark complete/failed
+- [ ] Dispatch table — explicit mapping. No `eval`, no dynamic imports
+- [ ] SKIP LOCKED claim: `UPDATE … WHERE id = (SELECT … FOR UPDATE SKIP LOCKED LIMIT 1) RETURNING *`
+- [ ] Exponential backoff + max_attempts → permanent `failed`
+- [ ] Stale-lock reaper for crashed workers
+- [ ] Handler idempotency — re-running must not duplicate effects
+
+**Required tests:**
+- [ ] Two-worker concurrency — only one wins the same row
+- [ ] Retry exhaustion — fails N times → `failed`
+- [ ] Stale-lock reaper — lock older than threshold resets
+- [ ] Each handler — happy path + validation-error + missing-row
+- [ ] Idempotency — run twice → identical DB state
+
+**JSONB payloads:**
+- [ ] Every payload shape has a Pydantic model
+- [ ] Validation errors → permanent fail (do not retry)
+
+**No global mutable state:**
+- [ ] No module-level `_cache = …` dicts
+- [ ] Own cache lifecycle in a class with DI
+
+**If any checkbox is unchecked, STOP and fix before application code.**
+Report to orchestrator:
+```
+BE Status: BLOCKED
+Reason: External-data gate failed — [which item]
+Action: Fix gate items before proceeding.
+```
+
+Tickets without external data / queues: skip this gate. Report `External-data gate: n/a`.
+
+---
+
 ## Workflow
 
 ### 1. Read Existing Patterns

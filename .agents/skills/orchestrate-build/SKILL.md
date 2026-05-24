@@ -153,75 +153,23 @@ Fetch the ticket via Notion MCP or `skills/ticket`. Extract:
 
 If no ticket ID, ask: "What are we building? Share the TASK number or describe the feature."
 
-### Step 2: Design System Contract Gate (FE work only)
+### Step 2: Delegate Domain Pre-flight Gates
 
-If this ticket touches frontend UI, verify the ticket contains a **Design System Contract**:
-- Element → utility class + CSS variable tokens
-- Every token must exist in the project's token file
-- No raw hex, no rgba literals, no inline styles
+**Do NOT run domain-specific gates in the orchestrator.** Each spawned agent runs its own pre-flight checks from its skill file:
 
-**If contract is missing:**
-```
-STOP. Do not write FE code. Output:
-"This ticket has frontend work but no Design System Contract.
-Please run /orchestrate-plan to add the contract to the ticket."
-```
+| Agent | Gate it runs |
+|---|---|
+| `agent-frontend-dev` | Design System Contract Gate |
+| `agent-backend-dev` | External-Data & Queue Gate |
+| `agent-database-dev` | Schema safety gate (migrations, rollbacks) |
 
-Backend-only tickets: skip. Note in state: `design_contract_gate: "n/a"`.
+The orchestrator's job is to **verify the agent reported PASS** in its output. If an agent reports `BLOCKED` or fails its own gate, stop and escalate.
 
-### Step 3: External-Data & Queue Gate (BE work only)
+Note in state:
+- `design_contract_gate`: `"delegated"` (frontend agent owns it)
+- `external_data_gate`: `"delegated"` (backend agent owns it)
 
-If the ticket touches external feeds, remote downloads, background workers, or HTTP calls to third-party hosts:
-
-**Parsing untrusted input:**
-- [ ] XML: use `defusedxml` — NEVER stdlib `xml.etree` on external bytes
-- [ ] JSON: use Pydantic `.model_validate(dict)` — never bare `.get()` chains
-
-**URL handling (SSRF prevention):**
-- [ ] Validate URLs BEFORE fetching — reject non-https, private ranges, loopback
-- [ ] `httpx.AsyncClient(..., follow_redirects=False)` or re-validate each target
-- [ ] Re-validate affiliate/retailer URLs before DB write
-
-**Downloading remote content:**
-- [ ] `max_bytes` cap (e.g. 10 MB images, 50 MB feeds)
-- [ ] Magic-byte sniff on first 8–12 bytes — NEVER trust `Content-Type` header
-- [ ] Re-check key does not contain `..` segments before CDN upload
-
-**External field values written to DB:**
-- [ ] Enum-validate string fields consumed by code
-- [ ] Length-cap free-text fields at boundary
-- [ ] Never persist raw feed values without validator
-
-**Async correctness:**
-- [ ] If ANY function is `async def`, ALL HTTP calls must be `await client.get(...)` — never blocking `httpx.get()`
-- [ ] If mixing sync + async, document WHY inline
-
-**Queue / worker completeness:**
-- [ ] Run-loop: claim → dispatch → mark complete/failed
-- [ ] Dispatch table — explicit mapping. No `eval`, no dynamic imports
-- [ ] SKIP LOCKED claim: `UPDATE … WHERE id = (SELECT … FOR UPDATE SKIP LOCKED LIMIT 1) RETURNING *`
-- [ ] Exponential backoff + max_attempts → permanent `failed`
-- [ ] Stale-lock reaper for crashed workers
-- [ ] Handler idempotency — re-running must not duplicate effects
-
-**Required tests:**
-- [ ] Two-worker concurrency — only one wins the same row
-- [ ] Retry exhaustion — fails N times → `failed`
-- [ ] Stale-lock reaper — lock older than threshold resets
-- [ ] Each handler — happy path + validation-error + missing-row
-- [ ] Idempotency — run twice → identical DB state
-
-**JSONB payloads:**
-- [ ] Every payload shape has a Pydantic model
-- [ ] Validation errors → permanent fail (do not retry)
-
-**No global mutable state:**
-- [ ] No module-level `_cache = …` dicts
-- [ ] Own cache lifecycle in a class with DI
-
-**If any checkbox is unchecked, STOP and fix before application code.**
-
-### Step 4: Update State — Build Started
+### Step 3: Update State — Build Started
 
 ```python
 import json
@@ -243,7 +191,7 @@ with open('.project-state.json', 'w') as f:
     json.dump(state, f, indent=2)
 ```
 
-### Step 5: Spawn Domain Agents
+### Step 4: Spawn Domain Agents
 
 Spawn the classified agents simultaneously:
 
@@ -253,7 +201,7 @@ Spawn the classified agents simultaneously:
 | Backend | `agent-backend-dev` |
 | Database | `agent-database-dev` |
 
-### Step 6: Collect Results
+### Step 5: Collect Results
 
 Parse each agent's output:
 ```
@@ -264,7 +212,7 @@ DB Status: COMPLETE | PARTIAL | BLOCKED
 
 If any agent reports **BLOCKED**, stop and ask the user before proceeding.
 
-### Step 7: Run Automated Standards Check
+### Step 6: Run Automated Standards Check
 
 ```bash
 # Frontend (read `.project-context.md` for repo location)
@@ -283,7 +231,7 @@ python -m pytest tests/ -v
 
 **Optional:** Spawn `agent-compliance-auditor` if the change touches auth, payments, PII, or external APIs.
 
-### Step 8: Verify Acceptance Criteria
+### Step 7: Verify Acceptance Criteria
 
 Check each AC from the ticket:
 ```
@@ -292,14 +240,14 @@ Check each AC from the ticket:
 ⬜ [Criterion 3] — [what's missing]
 ```
 
-### Step 9: Commit
+### Step 8: Commit
 
 ```bash
 git add [specific files — never git add -A]
 git commit -m "feat(TASK-XXX): [description]"
 ```
 
-### Step 10: Update State — Build Complete
+### Step 9: Update State — Build Complete
 
 ```python
 import json
@@ -332,8 +280,8 @@ Build complete: [TASK-XXX]
 - Tests: [pass/fail counts]
 - Lint: [pass/fail]
 - Anti-fabrication gate: [pass/fail]
-- Design contract gate: [pass/skip]
-- External-data gate: [pass/skip]
+- Design contract gate: [delegated → agent reported pass/fail]
+- External-data gate: [delegated → agent reported pass/fail]
 
 Ready for /orchestrate-review
 ```

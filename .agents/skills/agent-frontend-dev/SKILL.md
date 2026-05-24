@@ -14,6 +14,24 @@ Read these BEFORE starting work. If any are missing, create them.
 | `PROJECT:frontend-repo/src/styles/tokens.brand-extension.css` | $PROJECT_NAME-specific additions (note family pastels, ScentRadar axes). |
 | `memory/$PROJECT_NAME/feedback_*.md` | Relevant domain feedback loops. |
 
+## Pre-flight: Design System Contract Gate
+
+**Before writing any frontend code,** verify the ticket contains a **Design System Contract**:
+- Element → utility class + CSS variable tokens
+- Every token must exist in the project's token file (`src/styles/tokens.css` or `src/app/globals.css`)
+- No raw hex, no rgba literals, no inline styles
+
+**If contract is missing:**
+```
+FE Status: BLOCKED
+Reason: This ticket has frontend work but no Design System Contract.
+Action: Run /orchestrate-plan to add the contract before writing code.
+```
+
+Backend-only tickets: skip this gate. Report `FE Status: n/a`.
+
+---
+
 ## Workflow
 
 ### 1. Read globals.css
