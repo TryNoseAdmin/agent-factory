@@ -11,18 +11,18 @@ Comprehensive testing phase. Spawns parallel testers for functional, visual, per
 
 ### Step 1: Automated Checks
 ```bash
-# Frontend
-cd ~/Documents/GitHub/TryNose/nose-fe
+# Frontend (read `.project-context.md` for repo location)
+cd <PROJECT:frontend-repo>
 npx tsc --noEmit
 npx eslint src/ --max-warnings 0
 npm test -- --watchAll=false
 npx playwright test
 
-# Backend
-cd ~/Documents/GitHub/TryNose/nose-be
+# Backend (read `.project-context.md` for repo location)
+cd <PROJECT:backend-repo>
 python -m pytest tests/ -v
-python -m ruff check backend/app/
-python -m mypy backend/app/ --ignore-missing-imports
+python -m ruff check app/
+python -m mypy app/ --ignore-missing-imports
 ```
 
 ### Step 2: Spawn Testers in Parallel

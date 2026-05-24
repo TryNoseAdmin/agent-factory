@@ -45,7 +45,7 @@ After all agents report back:
 
 ### 1. Handle State Update Requests
 Check each agent's output for `## State Update Request` sections.
-- If valid and safe → apply to `.agents/project-data/state/nose/state.json`
+- If valid and safe → apply to `.project-state.json`
 - If unclear or risky → ask the user before applying
 - Log all applied updates with timestamp
 
@@ -67,10 +67,10 @@ ReadFile('.agents/agents/agent-rule-keeper.md')
 ### 3. Verify Agent Memory
 Spot-check that agents wrote to their memory files:
 ```bash
-# Quick check — last 5 lines of each agent's memory
-for dir in .agents/agent-memory/agent-*/; do
-  echo "=== $(basename $dir) ==="
-  tail -n 5 "$dir"state.*
+# Quick check — last 20 lines of each agent's memory
+for f in .agents/agent-memory/*.md; do
+  echo "=== $(basename $f) ==="
+  tail -n 20 "$f"
 done
 ```
 If an agent's memory is stale or empty, note it in your report.
@@ -90,7 +90,7 @@ If your workflow changes the project phase (e.g., build → review → qa → sh
 import json
 from datetime import datetime, timezone
 
-with open('.agents/project-data/state/nose/state.json', 'r') as f:
+with open('.project-state.json', 'r') as f:
     state = json.load(f)
 
 state['current_phase'] = '[new_phase]'
@@ -102,6 +102,6 @@ state['history'].append({
     'detail': '[summary]'
 })
 
-with open('.agents/project-data/state/nose/state.json', 'w') as f:
+with open('.project-state.json', 'w') as f:
     json.dump(state, f, indent=2)
 ```

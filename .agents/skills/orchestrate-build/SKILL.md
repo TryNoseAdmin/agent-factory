@@ -5,7 +5,7 @@ Read a Notion ticket, classify scope, spawn domain-specific agents (frontend, ba
 
 ## Pre-flight
 
-1. **Read state:** `.agents/project-data/state/nose/state.json`
+1. **Read state:** `.project-state.json`
 2. **Read ticket:** Fetch ticket via `skills/ticket` utility provided by the user
 3. **Classify scope** — determine which agents to spawn:
    - FE-only → `agent-frontend-dev`
@@ -59,17 +59,18 @@ If any agent reports **BLOCKED**, stop and ask the user before proceeding.
 
 ### Step 3: Run Automated Standards Check
 ```bash
-# nose-fe
-cd ~/Documents/GitHub/TryNose/nose-fe
+# Run project-specific checks (read `.project-context.md` for repo locations)
+# Frontend example:
+cd <PROJECT:frontend-repo>
 npx eslint src/ --max-warnings 0
 npx tsc --noEmit
 npm test -- --watchAll=false
 
-# nose-be
-cd ~/Documents/GitHub/TryNose/nose-be
-python -m ruff check backend/app/
-python -m ruff format --check backend/app/
-python -m mypy backend/app/ --ignore-missing-imports
+# Backend example:
+cd <PROJECT:backend-repo>
+python -m ruff check app/
+python -m ruff format --check app/
+python -m mypy app/ --ignore-missing-imports
 python -m pytest tests/ -v
 ```
 
@@ -96,7 +97,7 @@ git commit -m "feat(TASK-XXX): [description]"
 import json
 from datetime import datetime, timezone
 
-with open('.agents/project-data/state/nose/state.json', 'r') as f:
+with open('.project-state.json', 'r') as f:
     state = json.load(f)
 
 state['current_phase'] = 'ready_to_review'
@@ -109,7 +110,7 @@ state['history'].append({
     'detail': 'All domain agents finished'
 })
 
-with open('.agents/project-data/state/nose/state.json', 'w') as f:
+with open('.project-state.json', 'w') as f:
     json.dump(state, f, indent=2)
 ```
 

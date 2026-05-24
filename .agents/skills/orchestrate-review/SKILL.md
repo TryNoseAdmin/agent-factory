@@ -28,7 +28,7 @@ Spawn agents in parallel when possible. Wait for all results before proceeding.
 
 
 ## Pre-flight
-1. Read state: `.agents/project-data/state/nose/state.json`
+1. Read state: `.project-state.json`
 2. Fetch the diff (PR or local branch)
 3. Classify the diff to determine reviewer set
 
@@ -36,11 +36,11 @@ Spawn agents in parallel when possible. Wait for all results before proceeding.
 
 | PR Shape | Spawn These Reviewers |
 |----------|----------------------|
-| Frontend-only (`.tsx`, `.css`) | Engineering, Security, Design & A11y, Adversarial, Design Consistency, Coding Standards, AC |
-| Backend-only (`.py`, SQL) | Engineering, Security, Adversarial, Coding Standards, AC |
-| Full-stack | ALL reviewers |
+| Frontend-only (`.tsx`, `.css`) | Engineering, Security, Design, Adversarial, AC |
+| Backend-only (`.py`, SQL) | Engineering, Security, Adversarial, AC |
+| Full-stack | Engineering, Security, Design, Adversarial, AC |
 | Docs-only | Adversarial, AC |
-| Design-only | Design & A11y, Design Consistency, AC |
+| Design-only | Design, Adversarial, AC |
 
 **Always spawn:** Adversarial + Acceptance Criteria
 **Always skip if not applicable:** Design reviewers on backend-only PRs, Security on docs-only PRs
