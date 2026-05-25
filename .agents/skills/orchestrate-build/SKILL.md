@@ -13,32 +13,33 @@ Read a ticket, classify scope, spawn domain-specific agents with TDD, run gates 
    - Full-stack → all 3
    - DB-only → `agent-database-dev`
 
-## Spawn Protocol
+## Task File Protocol (Orchestrator Responsibility)
 
-For EACH agent you spawn, construct the prompt as:
+**The orchestrator does NOT write long agent prompts. The orchestrator writes task files.**
 
+### Step A: Write Task Files
+Before spawning any agent, write ONE task file per agent:
 ```
-{ReadFile('~/.agents/rules/universal.md')}
-
----
-
-{ReadFile('.project-context.md')}
-
----
-
-{ReadFile('~/.agents/agents/agent-<name>.md')}
-
----
-
-{ReadFile('~/.agents/skills/agent-<name>/SKILL.md')}
-
----
-
-## Task Context
-[Ticket summary, acceptance criteria, specific files to modify]
+PROJECT:frontend-repo/.agents/tasks/TASK-001-fe-dashboard.md
+PROJECT:frontend-repo/.agents/tasks/TASK-002-be-webhook.md
+PROJECT:brain-repo/.agents/tasks/TASK-003-db-schema.md
 ```
 
-Spawn agents in parallel when possible. Wait for all results before proceeding.
+Each task file MUST follow the schema defined in `~/.agents/rules/universal.md` → "Task File Protocol".
+
+### Step B: Spawn Agents
+Agent spawn prompt is a ONE-LINER:
+```
+Your task file is at: [path/to/TASK-XXX-name.md]
+Read it. Execute it. Report back with the output format specified in the file.
+```
+
+That's it. The task file contains everything the agent needs.
+
+### Step C: Collect Results
+Parse each agent's output against the "Output Format" section in their task file.
+
+Spawn agents in parallel when they have no dependencies. Wait for all results before proceeding.
 
 ---
 
@@ -129,6 +130,13 @@ if [ -f .project-state.json ]; then
   cat .project-state.json
 else
   echo "No state file. Initialize with /orchestrate-plan first."
+  exit 1
+fi
+
+# Artifact Input Gate
+if [ ! -f DESIGN.md ] && [ ! -f ARCHITECTURE.md ]; then
+  echo "CRITICAL ERROR: Missing Plan artifacts. Run /plan first to generate DESIGN.md and ARCHITECTURE.md."
+  exit 1
 fi
 ```
 
@@ -142,7 +150,7 @@ If in **fix mode** (after review failures):
 - Focus ONLY on fixing those issues
 - Do NOT add new features during a fix pass
 
-### Step 1: Read the Ticket
+### Step 1: Read the Ticket + Classify Scope
 
 Fetch the ticket via Notion MCP or `skills/ticket`. Extract:
 - **What to Do** — functional requirements
@@ -151,15 +159,51 @@ Fetch the ticket via Notion MCP or `skills/ticket`. Extract:
 - **Files Affected** — scope hint
 - **Dependencies** — blockers
 
+Classify which agents are needed:
+- FE-only → `agent-frontend-dev`
+- BE-only → `agent-backend-dev` (+ `agent-database-dev` if schema changes)
+- Full-stack → all 3
+- DB-only → `agent-database-dev`
+
 If no ticket ID, ask: "What are we building? Share the TASK number or describe the feature."
 
-### Step 2: Delegate Domain Pre-flight Gates
+### Step 2: Write Task Files
 
-**Do NOT run domain-specific gates in the orchestrator.** Each spawned agent runs its own pre-flight checks from its skill file:
+**Write one task file per agent BEFORE spawning anyone.**
+
+If frontend work is involved, write the frontend task file first. If it requires design discovery, the task file itself instructs the agent to run its Design Discovery step (from `agent-ui-designer/SKILL.md`).
+
+Task file location:
+```bash
+mkdir -p PROJECT:frontend-repo/.agents/tasks/
+mkdir -p PROJECT:brain-repo/.agents/tasks/
+```
+
+Task file naming: `TASK-001-[domain]-[short-name].md`
+
+### Step 3: Design Discovery Gate (Frontend Work Only)
+
+**If the ticket involves any frontend work:**
+
+The frontend agent's task file MUST include the Design Discovery step. The agent runs it, produces `DESIGN_CONTRACT.md`, and continues only if it passes.
+
+**Block condition:**
+```
+If agent-ui-designer (spawned via task file) reports BLOCKED or Design Discovery FAIL:
+  → STOP. Do not spawn other agents.
+  → Report to user: "Design discovery found critical gaps. Fix design system before coding."
+  → Include DESIGN_GAP_REPORT.md contents.
+```
+
+Backend-only tickets: skip this gate.
+
+### Step 4: Delegate Domain Pre-flight Gates
+
+**Do NOT run domain-specific gates in the orchestrator.** Each spawned agent runs its own pre-flight checks from its skill file, guided by its task file.
 
 | Agent | Gate it runs |
 |---|---|
-| `agent-frontend-dev` | Design System Contract Gate |
+| `agent-frontend-dev` | Design System Contract Gate (reads task file for contract spec) |
 | `agent-backend-dev` | External-Data & Queue Gate |
 | `agent-database-dev` | Schema safety gate (migrations, rollbacks) |
 
@@ -169,7 +213,7 @@ Note in state:
 - `design_contract_gate`: `"delegated"` (frontend agent owns it)
 - `external_data_gate`: `"delegated"` (backend agent owns it)
 
-### Step 3: Update State — Build Started
+### Step 5: Update State — Build Started
 
 ```python
 import json
@@ -191,19 +235,25 @@ with open('.project-state.json', 'w') as f:
     json.dump(state, f, indent=2)
 ```
 
-### Step 4: Spawn Domain Agents
+### Step 6: Spawn Domain Agents
 
-Spawn the classified agents simultaneously:
+Spawn the classified agents simultaneously with one-liner prompts pointing to their task files:
 
-| Scope | Agents |
-|-------|--------|
-| Frontend | `agent-frontend-dev` |
-| Backend | `agent-backend-dev` |
-| Database | `agent-database-dev` |
+```
+Your task file is at: PROJECT:frontend-repo/.agents/tasks/TASK-001-fe-dashboard.md
+Read it. Execute it. Report back.
+```
 
-### Step 5: Collect Results
+| Scope | Agents | Pre-requisite |
+|-------|--------|---------------|
+| Frontend | `agent-frontend-dev` (task file includes design discovery) | Task file written |
+| Backend | `agent-backend-dev` | Task file written |
+| Database | `agent-database-dev` | Task file written |
+| Full-stack | All 3 dev agents in parallel | All task files written |
 
-Parse each agent's output:
+### Step 7: Collect Results
+
+Parse each agent's output against the "Output Format" in their task file:
 ```
 FE Status: COMPLETE | PARTIAL | BLOCKED
 BE Status: COMPLETE | PARTIAL | BLOCKED
@@ -212,7 +262,7 @@ DB Status: COMPLETE | PARTIAL | BLOCKED
 
 If any agent reports **BLOCKED**, stop and ask the user before proceeding.
 
-### Step 6: Run Automated Standards Check
+### Step 8: Run Automated Standards Check
 
 ```bash
 # Frontend (read `.project-context.md` for repo location)
@@ -231,7 +281,7 @@ python -m pytest tests/ -v
 
 **Optional:** Spawn `agent-compliance-auditor` if the change touches auth, payments, PII, or external APIs.
 
-### Step 7: Verify Acceptance Criteria
+### Step 9: Verify Acceptance Criteria
 
 Check each AC from the ticket:
 ```
@@ -240,14 +290,26 @@ Check each AC from the ticket:
 ⬜ [Criterion 3] — [what's missing]
 ```
 
-### Step 8: Commit
+### Step 10: Commit
 
 ```bash
 git add [specific files — never git add -A]
 git commit -m "feat(TASK-XXX): [description]"
 ```
 
-### Step 9: Update State — Build Complete
+### Step 10.5: Artifact Output Gate
+Before completing the `/build` phase, ensure you generate the physical artifacts required for review.
+- Create `TEST_COVERAGE.md`
+- Create `BUILD_SUMMARY.md`
+
+```bash
+if [ ! -f TEST_COVERAGE.md ] || [ ! -f BUILD_SUMMARY.md ]; then
+  echo "CRITICAL ERROR: Build artifacts missing. You must generate TEST_COVERAGE.md and BUILD_SUMMARY.md."
+  exit 1
+fi
+```
+
+### Step 11: Update State — Build Complete
 
 ```python
 import json
@@ -280,7 +342,8 @@ Build complete: [TASK-XXX]
 - Tests: [pass/fail counts]
 - Lint: [pass/fail]
 - Anti-fabrication gate: [pass/fail]
-- Design contract gate: [delegated → agent reported pass/fail]
+- Design discovery gate: [agent-ui-designer spawned first → PASS / FAIL / SKIP]
+- Design contract gate: [delegated → frontend agent reported pass/fail]
 - External-data gate: [delegated → agent reported pass/fail]
 
 Ready for /orchestrate-review

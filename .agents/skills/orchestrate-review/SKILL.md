@@ -3,32 +3,35 @@
 ## Purpose
 Classify a diff, spawn ONLY the reviewers that apply, synthesize findings into a severity-ranked report, and gate the merge decision.
 
-## Spawn Protocol
+## Task File Protocol (Orchestrator Responsibility)
 
-For EACH agent you spawn, construct the prompt as:
+**The orchestrator does NOT write long agent prompts. The orchestrator writes task files.**
 
+### Step A: Write Task Files
+Before spawning any reviewer, write ONE task file per reviewer:
 ```
-{ReadFile('~/.agents/rules/universal.md')}
-
----
-
-{ReadFile('.project-context.md')}
-
----
-
-{ReadFile('~/.agents/agents/agent-<name>.md')}
-
----
-
-{ReadFile('~/.agents/skills/agent-<name>/SKILL.md')}
-
----
-
-## Task Context
-[specific task, ticket, diff, etc.]
+PROJECT:frontend-repo/.agents/tasks/REVIEW-001-engineering.md
+PROJECT:frontend-repo/.agents/tasks/REVIEW-002-security.md
+PROJECT:frontend-repo/.agents/tasks/REVIEW-003-design.md
 ```
 
-Spawn agents in parallel when possible. Wait for all results before proceeding.
+Each task file MUST contain:
+- Diff to review (file paths + changes)
+- Scope boundary (what to review / what NOT to review)
+- Acceptance criteria from the original ticket
+- Output format (severity-ranked findings)
+
+### Step B: Spawn Reviewers
+Agent spawn prompt is a ONE-LINER:
+```
+Your task file is at: [path/to/REVIEW-XXX-name.md]
+Read it. Execute it. Report back with the output format specified in the file.
+```
+
+### Step C: Collect Results
+Parse each reviewer's output against the "Output Format" section in their task file.
+
+Spawn reviewers in parallel when they have no dependencies. Wait for all results before proceeding.
 
 ---
 
@@ -70,6 +73,12 @@ If a criterion says "uses caching" / "saves N tokens" / "supports feature X" and
 
 ```bash
 cat .project-state.json 2>/dev/null || echo "No state file"
+
+# Artifact Input Gate
+if [ ! -f TEST_COVERAGE.md ] || [ ! -f BUILD_SUMMARY.md ]; then
+  echo "CRITICAL ERROR: Missing Build artifacts. Build phase must output TEST_COVERAGE.md and BUILD_SUMMARY.md."
+  exit 1
+fi
 ```
 
 Check:
@@ -192,6 +201,16 @@ Merge all reviewer outputs into a unified severity-ranked report:
 - Any **CRITICAL** finding = automatic NEEDS FIXES
 - Any **NOT MET** AC = automatic NEEDS FIXES
 - All findings ≤ MEDIUM + all ACs MET = APPROVED
+
+### Step 4.5: Artifact Output Gate
+Before completing the `/review` phase, write the consolidated severity-ranked findings into `REVIEW_REPORT.md`.
+
+```bash
+if [ ! -f REVIEW_REPORT.md ]; then
+  echo "CRITICAL ERROR: Review artifact missing. You must generate REVIEW_REPORT.md."
+  exit 1
+fi
+```
 
 ### Step 5: Update State
 

@@ -58,7 +58,13 @@ UX research brief → UI design → design audit:
 2. `agent-content-strategist` — content plan, growth strategy
 
 ### Phase 4: Synthesize
-Merge all outputs into unified plan document:
+Merge all outputs into unified plan document AND explicitly generate the following permanent artifacts in the project root:
+- `DESIGN.md` (Design Specs, UI tokens, palettes)
+- `ARCHITECTURE.md` (Data models, API routes, stack)
+- `SEO_PLAN.md` (Routes, keywords, schema)
+These physical files MUST be generated before proceeding.
+
+The unified plan document should summarize:
 - **Executive Summary** (strategy)
 - **Architecture** (data model + API)
 - **Design Specs** (UI + audit)
@@ -68,7 +74,54 @@ Merge all outputs into unified plan document:
 - **Implementation Phases** (ordered by dependency)
 - **Complexity Estimate** (S/M/L/XL)
 
-### Phase 5: Utility Skills (On Demand)
+### Phase 5: Generate Task Files
+
+**Before declaring plan complete, the orchestrator MUST write task files** — one per agent that will be spawned in `/orchestrate-build`.
+
+Task files live in:
+```
+PROJECT:frontend-repo/.agents/tasks/TASK-001-[name].md   (for FE agents)
+PROJECT:frontend-repo/.agents/tasks/TASK-002-[name].md   (for BE agents)
+PROJECT:brain-repo/.agents/tasks/TASK-003-[name].md      (for DB agents)
+```
+
+**Task file schema** (enforced by orchestrator, consumed by agents):
+```markdown
+# Task: [short name]
+## Agent Type
+[agent-frontend-dev | agent-backend-dev | agent-database-dev | ...]
+
+## Scope
+### What to Do
+[specific deliverables]
+
+### What NOT to Do
+[explicit out-of-scope items]
+
+## Files to Read Before Starting
+- `DESIGN.md` (Required for Frontend) — Strict UI guidelines.
+- `ARCHITECTURE.md` (Required for Backend) — Strict data and API schema.
+- [other file paths] — [why]
+
+## Acceptance Criteria
+- [ ] Criterion 1
+- [ ] Criterion 2
+
+## Constraints
+- [stack constraints]
+- [design system rules]
+- [security rules]
+
+## Output Format
+[exact report format]
+
+## Notes
+[context, prior decisions, blockers]
+```
+
+**One agent = one task file. Never give an agent >3 responsibilities.** Split into parallel task files if needed.
+
+### Phase 6: Utility Skills (On Demand)
 Available during planning if needed:
 - `skills/design-md` — design system synthesis
 - `skills/enhance-prompt` — UI idea → polished prompt
@@ -78,6 +131,15 @@ Call `skills/ticket` to create or update ONE ticket with:
 - Title, description, acceptance criteria
 - All plan artifacts (design specs, content plan, SEO plan)
 - Effort estimate, assigned epic
+
+### Step 7: Artifact Output Gate
+Before completing the `/plan` phase, explicitly verify that the required artifacts were physically created.
+```bash
+if [ ! -f DESIGN.md ] || [ ! -f ARCHITECTURE.md ]; then
+  echo "CRITICAL ERROR: Plan artifacts missing. You must generate DESIGN.md and ARCHITECTURE.md."
+  exit 1
+fi
+```
 
 ## Post-flight
 ```

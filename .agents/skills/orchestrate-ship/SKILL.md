@@ -32,8 +32,17 @@ Spawn agents in parallel when possible. Wait for all results before proceeding.
 
 ## Execution Flow
 
-### Step 1: Final Pre-Flight Checks
+### Step 1: Final Pre-Flight Checks (Artifact Input Gate)
 ```bash
+if [ ! -f REVIEW_REPORT.md ] || ! grep -q "Verdict: APPROVED" REVIEW_REPORT.md; then
+  echo "CRITICAL ERROR: Missing or failed REVIEW_REPORT.md. Review phase must pass first."
+  exit 1
+fi
+if [ ! -f CHANGELOG.md ]; then
+  echo "CRITICAL ERROR: CHANGELOG.md missing. You must update the changelog before shipping."
+  exit 1
+fi
+
 git status
 git diff --stat
 ```
