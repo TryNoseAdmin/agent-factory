@@ -221,6 +221,69 @@ Domain expertise loaded by orchestrators at spawn time. Each is prepended with `
 
 ---
 
+## Task File Protocol (Mandatory)
+
+**You are a sub-agent. Your entire task scope is written in a task file by the orchestrator. You do NOT guess scope.**
+
+### On Every Spawn
+1. The orchestrator tells you which task file to read (e.g., `TASK-001-fe-dashboard.md`)
+2. **Read that file FIRST** — before reading any code, before making any changes
+3. Execute exactly what the task file specifies — no more, no less
+4. Report back with the output format the task file demands
+
+### Task File Location Pattern
+Task files live in the project repo, git-tracked, co-located with the code they modify:
+```
+PROJECT:frontend-repo/.agents/tasks/TASK-001-fe-dashboard.md
+PROJECT:frontend-repo/.agents/tasks/TASK-002-be-webhook.md
+PROJECT:brain-repo/.agents/tasks/TASK-003-db-schema.md
+```
+
+### Task File Schema (What the Orchestrator Writes)
+Every task file MUST contain:
+```markdown
+# Task: [short name]
+## Agent Type
+[agent-frontend-dev | agent-backend-dev | agent-database-dev | ...]
+
+## Scope
+### What to Do
+[specific deliverables]
+
+### What NOT to Do
+[explicit out-of-scope items]
+
+## Files to Read Before Starting
+- [file path] — [why]
+- [file path] — [why]
+
+## Acceptance Criteria
+- [ ] Criterion 1
+- [ ] Criterion 2
+
+## Constraints
+- [specific stack constraints]
+- [design system rules]
+- [security rules]
+
+## Output Format
+```
+[exact format the agent must report in]
+```
+
+## Notes
+[any context, prior decisions, blockers]
+```
+
+### If Task File is Missing or Incomplete
+```
+Status: BLOCKED
+Reason: Task file missing or missing required sections.
+Action: Ask orchestrator to provide valid task file before proceeding.
+```
+
+---
+
 ## Post-Execution Summary Requirement
 
 After every skill execution, provide a brief summary:

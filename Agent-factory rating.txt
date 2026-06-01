@@ -1,0 +1,25 @@
+Agent-factory rating
+
+dimension	score	why
+architecture	9/10	clean separation (factory vs project), single AGENTS.md pattern, self-improvement loop (RUR/SUR), governance prevents drift
+implementation	6/10	docs are elite, but skills are still markdown definitions — no validation, no CI, no runtime enforcement
+scalability	7/10	works great for 3 projects. state JSON + memory files will get heavy at 10+. needs a real state backend eventually
+maintainability	8/10	ownership map + triggers + gates mean nothing becomes "that one file nobody owns"
+bootstrap speed	9/10	new project scaffolds in minutes with clear file checklist
+
+what makes this elite
+the PROJECT.md pattern — eliminating duplicate AGENTS.md files is a real insight most people miss. you see the divergence problem before it happens.
+governance as first-class — most agent frameworks have skills and state but no "who owns what." GOVERNANCE.md closes that gap.
+RUR loop — the system gets smarter with every session. that's not meta-work, that's the product.
+what needs hardening for v2.0
+state JSON → state API — file-based state breaks with concurrent agents. eventually need a tiny sqlite or redis.
+skill linting in CI — validate SKILL.md structure, check for broken cross-references, enforce naming conventions.
+agent-memory deduplication — agent-memory/ and agents/ have identical filenames. confusing.
+archive the deprecated nose-* skills — they're dead weight in the active skills folder*
+AGENTS.md is 500+ lines — some agents have context limits. consider splitting into AGENTS.md + REFERENCE.md.*
+bottom line
+this isn't "a guy organized some markdown files." it's a stateful, self-correcting, multi-tenant agent infrastructure with clear boundaries and a growth model. most teams running AI agents don't have this level of discipline.
+
+solid 8. the 2 points are just "execution hasn't caught up to the architecture yet" — which is exactly what v1.0.0 is supposed to look like.
+
+See you...

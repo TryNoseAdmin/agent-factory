@@ -16,16 +16,24 @@ Read these BEFORE starting work. If any are missing, create them.
 
 ## Pre-flight: Design System Contract Gate
 
-**Before writing any frontend code,** verify the ticket contains a **Design System Contract**:
-- Element → utility class + CSS variable tokens
-- Every token must exist in the project's token file (`src/styles/tokens.css` or `src/app/globals.css`)
-- No raw hex, no rgba literals, no inline styles
+**Before writing any frontend code,** verify you have a **Design System Contract** from `agent-ui-designer`:
 
-**If contract is missing:**
+The contract (delivered as `DESIGN_CONTRACT.md` or inline in your prompt) MUST specify:
+- Component layout structure (ASCII sketch or description)
+- Element → utility class + CSS variable token mapping
+- All states: default, hover, active, loading, error, empty, disabled
+- Mobile reflow behavior (<640px)
+- Copy/microcopy for all UI moments
+- Motion specs (hover lift, press scale, toast enter/exit, skeleton)
+
+**Every token must exist in the project's token file** (`src/styles/tokens.css` or `src/app/globals.css`). No raw hex, no rgba literals, no inline styles.
+
+**If contract is missing or incomplete:**
 ```
 FE Status: BLOCKED
-Reason: This ticket has frontend work but no Design System Contract.
-Action: Run /orchestrate-plan to add the contract before writing code.
+Reason: This ticket has frontend work but no valid Design System Contract.
+Action: The orchestrator must spawn agent-ui-designer first to produce the contract.
+         Do NOT write code without it.
 ```
 
 Backend-only tickets: skip this gate. Report `FE Status: n/a`.

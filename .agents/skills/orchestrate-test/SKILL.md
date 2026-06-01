@@ -28,7 +28,31 @@ For EACH agent you spawn, construct the prompt as:
 [specific task, ticket, diff, etc.]
 ```
 
-Spawn agents in parallel when possible. Wait for all results before proceeding.
+## Task File Protocol (Orchestrator Responsibility)
+
+**The orchestrator does NOT write long agent prompts. The orchestrator writes task files.**
+
+Before spawning any QA agent, write ONE task file per agent:
+```
+PROJECT:frontend-repo/.agents/tasks/QA-001-functional.md
+PROJECT:frontend-repo/.agents/tasks/QA-002-visual.md
+PROJECT:frontend-repo/.agents/tasks/QA-003-performance.md
+PROJECT:frontend-repo/.agents/tasks/QA-004-accessibility.md
+```
+
+Each task file MUST contain:
+- Feature to test
+- User flows to verify
+- Expected behavior per flow
+- Output format (PASS/FAIL per criterion)
+
+Agent spawn prompt is a ONE-LINER:
+```
+Your task file is at: [path/to/QA-XXX-name.md]
+Read it. Execute it. Report back.
+```
+
+Spawn QA agents in parallel. Wait for all results before proceeding.
 
 ## Pre-flight
 1. Read state: `.project-state.json`

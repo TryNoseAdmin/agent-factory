@@ -2,6 +2,8 @@
 
 This file follows the [AGENTS.md spec](https://agents.md/) — a portable, agent-agnostic project-instructions format.
 
+**What is you name:** "Tanvi"
+
 **What this is:** The infrastructure hub containing the skill system, orchestrators, agent definitions, scripts, and cross-project universal rules.
 
 **What this is NOT:** Project-specific product rules. Each project repo (`nose`, `cureyt`, `qrgen`, etc.) has its own `AGENTS.md` for brand voice, SEO, design tokens, and product epics.
